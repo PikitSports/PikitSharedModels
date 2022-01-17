@@ -9,6 +9,7 @@ import java.util.HashMap;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Game {
     private HashMap<String, String> gameStats;
     private HashMap<String, String> homeTeamStats;
