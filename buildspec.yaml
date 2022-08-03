@@ -11,7 +11,7 @@ phases:
 
   build:
     commands:
-      - export CODEARTIFACT_TOKEN=`aws codeartifact get-authorization-token --domain slickpickbets-backend --domain-owner 591565668473 --query authorizationToken --output text`
+      - export CODEARTIFACT_TOKEN=`aws codeartifact get-authorization-token --domain slickpickbets-backend --query authorizationToken --output text`
       - echo "Trying to get authentication token"
       - aws codeartifact get-authorization-token --domain slickpickbets-backend --domain-owner 591565668473 --query authorizationToken --output text
       - echo "Did we get the token properly? "
