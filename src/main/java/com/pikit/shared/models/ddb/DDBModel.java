@@ -25,6 +25,7 @@ public class DDBModel {
     private List<String> gamesStored;
     private ModelPerformance modelPerformance;
     private List<TopGameData> top3Games;
+    private Boolean alertsEnabled;
 
     public void setModelConfiguration(String modelConfiguration) throws IOException {
         this.modelConfiguration = new ObjectMapper().readValue(modelConfiguration, ModelConfiguration.class);

@@ -6,6 +6,8 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pikit.shared.dagger.DaggerServiceComponent;
+import com.pikit.shared.dagger.ServiceComponent;
 import com.pikit.shared.models.GameThatMeetsModel;
 import com.sun.jmx.remote.internal.ArrayQueue;
 
@@ -16,13 +18,19 @@ import java.util.TreeMap;
 
 public class GamesThatMeetModelDAO {
 
-    static AmazonDynamoDB dbClient = AmazonDynamoDBClientBuilder.defaultClient();
-    static DynamoDB dynamoDB = new DynamoDB(dbClient);
-    private static final String GAMES_THAT_MEET_MODEL_TABLE_NAME = "Pikit_Games_That_Meet_Model";
-    static Table gamesThatMeetModelTable = dynamoDB.getTable(GAMES_THAT_MEET_MODEL_TABLE_NAME);
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static Table gamesThatMeetModelTable;
+    private static ObjectMapper objectMapper;
 
-    public static List<String> addGamesThatMeetModel(String modelId, TreeMap<String, List<GameThatMeetsModel>> gamesThatMeetModel) {
+    private static ServiceComponent serviceComponent = DaggerServiceComponent.create();
+
+    public GamesThatMeetModelDAO() { this(serviceComponent); }
+
+    public GamesThatMeetModelDAO(ServiceComponent serviceComponent) {
+        gamesThatMeetModelTable = serviceComponent.getGamesThatMeetModelTable();
+        objectMapper = serviceComponent.getObjectMapper();
+    }
+
+    public List<String> addGamesThatMeetModel(String modelId, TreeMap<String, List<GameThatMeetsModel>> gamesThatMeetModel) {
         try {
             List<String> gamesToStore = new ArrayList<>();
             for (Map.Entry<String, List<GameThatMeetsModel>> entry: gamesThatMeetModel.entrySet()) {
@@ -42,7 +50,7 @@ public class GamesThatMeetModelDAO {
         }
     }
 
-    public static void deleteOldGamesThatMetModel(String modelId, String season) {
+    public void deleteOldGamesThatMetModel(String modelId, String season) {
         try {
             String key = modelId + "|" + season;
             gamesThatMeetModelTable.deleteItem("id", key);

@@ -1,5 +1,6 @@
 package com.pikit.shared.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pikit.shared.enums.Bet;
 import com.pikit.shared.enums.BetResult;
 import lombok.*;
@@ -16,4 +17,6 @@ public class TopGameData {
     private String awayTeam;
     private String gameDate;
     private HashMap<Bet, BetResult> bets;
+    @JsonIgnore
+    private String numGameForDay;
 }

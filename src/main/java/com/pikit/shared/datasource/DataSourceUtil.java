@@ -8,6 +8,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pikit.shared.dagger.DaggerServiceComponent;
+import com.pikit.shared.dagger.ServiceComponent;
 import com.pikit.shared.models.Game;
 
 import java.io.ByteArrayInputStream;
@@ -18,12 +20,21 @@ import java.util.zip.GZIPOutputStream;
 
 public class DataSourceUtil {
 
+    private static ServiceComponent serviceComponent = DaggerServiceComponent.create();
     private static final String S3_BUCKET = "pikit-games";
-    private static AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static AmazonS3 s3Client;
+    private static ObjectMapper objectMapper;
 
-    public static List<Game> getGamesFromDataSource(String leagueFile) {
+    public DataSourceUtil() { this(serviceComponent); }
+
+    public DataSourceUtil(ServiceComponent serviceComponent) {
+        s3Client = serviceComponent.getS3Client();
+        objectMapper = serviceComponent.getObjectMapper();
+    }
+
+    public List<Game> getGamesFromDataSource(String leagueFile) {
         try {
+            System.out.println("Attempting to get games from league file: " + leagueFile);
             S3Object object = s3Client.getObject(S3_BUCKET, leagueFile);
             GZIPInputStream gzipInputStream = new GZIPInputStream(object.getObjectContent());
             List<Game> games = objectMapper.readValue(gzipInputStream, new TypeReference<List<Game>>(){});
@@ -37,7 +48,7 @@ public class DataSourceUtil {
         }
     }
 
-    public static void saveGamesForDataSource(String leagueFile, List<Game> games) {
+    public void saveGamesForDataSource(String leagueFile, List<Game> games) {
         try {
             byte[] gamesBytes = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(games);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
