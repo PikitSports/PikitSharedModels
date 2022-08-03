@@ -1,9 +1,25 @@
 <settings>
     <servers>
         <server>
-            <id>codeartifact</id>
+            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
             <username>aws</username>
             <password>${env.CODEARTIFACT_TOKEN}</password>
         </server>
     </servers>
+
+
+    <profiles>
+        <profile>
+            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
+                    <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets-SharedModels/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 </settings>

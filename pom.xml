@@ -15,9 +15,9 @@
 
     <distributionManagement>
         <repository>
-            <id>slickpickbets-SlickPickBEts</id>
-            <name>slickpickbets-SlickPickBEts</name>
-            <url>https://slickpickbets-897442933456.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBEts/</url>
+            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
+            <name>slickpickbets-backend-SlickPickBets-SharedModels</name>
+            <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets-SharedModels/</url>
         </repository>
     </distributionManagement>
 
