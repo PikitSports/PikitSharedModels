@@ -14,6 +14,6 @@ phases:
       - export CODEARTIFACT_TOKEN=`aws codeartifact get-authorization-token --domain slickpickbets-backend --domain-owner 591565668473 --query authorizationToken --output text`
       - echo "Trying to get authentication token"
       - aws codeartifact get-authorization-token --domain slickpickbets-backend --domain-owner 591565668473 --query authorizationToken --output text
-      - echo "Did we get the token properly?"
+      - echo "Did we get the token properly? "
       - echo $CODEARTIFACT_TOKEN
       - mvn -s settings.xml clean package deploy
