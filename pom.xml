@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>PikitSharedModels</groupId>
-    <artifactId>pikit-shared-models</artifactId>
+    <groupId>com.slickpickbets</groupId>
+    <artifactId>shared-models</artifactId>
     <version>1.0.1</version>
 
     <properties>
@@ -15,9 +15,9 @@
 
     <distributionManagement>
         <repository>
-            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
-            <name>slickpickbets-backend-SlickPickBets-SharedModels</name>
-            <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets-SharedModels/</url>
+            <id>slickpickbets-backend-SlickPickBets</id>
+            <name>slickpickbets-backend-SlickPickBets</name>
+            <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets/</url>
         </repository>
     </distributionManagement>
 

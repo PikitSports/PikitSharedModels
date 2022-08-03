@@ -1,7 +1,7 @@
 <settings>
     <servers>
         <server>
-            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
+            <id>slickpickbets-backend-SlickPickBets</id>
             <username>aws</username>
             <password>${env.CODEARTIFACT_TOKEN}</password>
         </server>
@@ -10,14 +10,14 @@
 
     <profiles>
         <profile>
-            <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
+            <id>slickpickbets-backend-SlickPickBets</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <repositories>
                 <repository>
-                    <id>slickpickbets-backend-SlickPickBets-SharedModels</id>
-                    <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets-SharedModels/</url>
+                    <id>slickpickbets-backend-SlickPickBets</id>
+                    <url>https://slickpickbets-backend-591565668473.d.codeartifact.us-east-1.amazonaws.com/maven/SlickPickBets/</url>
                 </repository>
             </repositories>
         </profile>
