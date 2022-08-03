@@ -11,5 +11,5 @@ phases:
 
   build:
     commands:
-      - export CODEARTIFACT_TOKEN=`aws codeartifact get-authorization-token --domain ${CODEARTIFACT_DOMAIN} --query authorizationToken --output text`
+      - export CODEARTIFACT_TOKEN=`aws codeartifact get-authorization-token --domain slickpickbets-backend --domain-owner 591565668473 --query authorizationToken --output text`
       - mvn -s settings.xml clean package deploy
