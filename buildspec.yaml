@@ -28,5 +28,5 @@ artifacts:
     SlickPickBetsArtifacts:
       base-directory: target
       files:
-        - '**/*'
+        - 'shared-models-1.0.1-jar-with-dependencies.jar'
       name: SlickPickBetsArtifacts
