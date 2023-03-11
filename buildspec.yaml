@@ -22,11 +22,6 @@ phases:
       - echo "Just deleted existing package, now we are set to re-deploy package"
       - mvn -s settings.xml clean package deploy
 artifacts:
-  files:
-    - '**/*'
-  secondary-artifacts:
-    SlickPickBetsArtifacts:
-      base-directory: target
-      files:
-        - 'shared-models-1.0.1-jar-with-dependencies.jar'
-      name: SlickPickBetsArtifacts
+  base-directory: target
+  files: 
+    - 'shared-models-1.0.1-jar-with-dependencies.jar'
