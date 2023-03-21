@@ -293,6 +293,13 @@
                         <version>5.4.0</version>
                     </dependency>
                 </dependencies>
+                <configuration>
+                    <systemPropertyVariables>
+                        <propertyName>sqlite4java.library.path</propertyName>
+                        <propertyValue>./native-libs</propertyValue>
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>
