@@ -20,7 +20,5 @@ public class ModelConfiguration {
     private List<ModelRequirement> modelRequirements;
     private List<Bet> betsTaken;
     private BetType betType;
-    private int modelStartRange;
-    private int modelEndRange;
-    private String modelTimeRangeDescription;
+    private List<String> seasonsStored;
 }

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for pikit-shared-models" enabled="true">
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for shared-models" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -28,7 +29,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="PikitSharedModels" target="8" />
+      <module name="PikitSharedModels" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -13,4 +13,5 @@ import java.util.List;
 public class ModelPerformance {
     private HashMap<String, List<BetProfitability>> individualSeasonProfitability;
     private List<BetProfitability> overallProfitability;
+    private List<TopGameData> latestGames;
 }

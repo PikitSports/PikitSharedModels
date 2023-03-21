@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UpcomingGameThatMeetsModel {
     private String gameId;
-    private String modelId;
     private HashMap<String, String> gameStats;
     private HashMap<String, String> bettingStats;
     private HashMap<String, String> homeTeamStats;

@@ -1,7 +1,7 @@
 package com.pikit.shared.exceptions;
 
-public class InvalidRequestException extends Exception {
+public class InvalidRequestException extends SlickPicksException {
     public InvalidRequestException(String errorMessage) {
-        super(errorMessage);
+        super(errorMessage, 400);
     }
 }
