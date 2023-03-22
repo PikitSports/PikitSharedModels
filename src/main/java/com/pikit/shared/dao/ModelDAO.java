@@ -1,5 +1,6 @@
 package com.pikit.shared.dao;
 
+import com.pikit.shared.dao.ddb.model.ModelStatus;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
@@ -51,4 +52,21 @@ public interface ModelDAO {
      * @throws PersistenceException
      */
     void deleteModel(String modelId) throws PersistenceException;
+
+    /**
+     * Given a modelId, retrieve the model status. I.e. whether the model is currently processing, failed processing or is completed.
+     * @param modelId Model to get the status for
+     * @return Status of the model
+     * @throws PersistenceException
+     */
+    ModelStatus getModelStatus(String modelId) throws PersistenceException, NotFoundException;
+
+    /**
+     * This method is used when a model workflow run has been kicked off / updated / completed and we want to update the
+     * data to reflect this status.
+     * @param modelId ID of the model to update
+     * @param modelStatus Status of the model
+     * @param workflowExecutionId Current ID of the execution running for the model.
+     */
+    void updateModelRunInformation(String modelId, ModelStatus modelStatus, String workflowExecutionId) throws PersistenceException, NotFoundException;
 }

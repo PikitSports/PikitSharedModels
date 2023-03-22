@@ -23,6 +23,8 @@ public class DDBModel {
     private static final String LEAGUE_ATTRIBUTE = "league";
     private static final String MODEL_PERFORMANCE_ATTRIBUTE = "modelPerformance";
     private static final String TOP_3_GAMES_ATTRIBUTE = "top3Games";
+    private static final String MODEL_STATUS_ATTRIBUTE = "modelStatus";
+    private static final String MODEL_WORKFLOW_EXECUTION_ATTRIBUTE = "modelWorkflowExecution";
 
     private static final String USER_MODELS_INDEX = "userModelsIndex";
 
@@ -51,4 +53,10 @@ public class DDBModel {
 
     @Getter(onMethod_ = {@DynamoDbAttribute(LAST_UPDATED_TIMESTAMP_ATTRIBUTE)})
     private Long lastUpdatedTimestamp;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_STATUS_ATTRIBUTE)})
+    private String modelStatus;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_WORKFLOW_EXECUTION_ATTRIBUTE)})
+    private String modelWorkflowExecution;
 }

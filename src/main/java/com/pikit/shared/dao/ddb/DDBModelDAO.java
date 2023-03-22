@@ -1,6 +1,7 @@
 package com.pikit.shared.dao.ddb;
 
 import com.pikit.shared.dao.ModelDAO;
+import com.pikit.shared.dao.ddb.model.ModelStatus;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
@@ -39,6 +40,7 @@ public class DDBModelDAO implements ModelDAO {
                 .userCreatedBy(userId)
                 .creationTimestamp(creationTimestamp)
                 .modelConfiguration(modelConfiguration)
+                .modelStatus(ModelStatus.CREATING.toString())
                 .build();
 
         try {
@@ -139,6 +141,55 @@ public class DDBModelDAO implements ModelDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown deleting model {}", modelId, e);
             throw new PersistenceException("Failed to delete model");
+        }
+    }
+
+    @Override
+    public ModelStatus getModelStatus(String modelId) throws PersistenceException, NotFoundException {
+        try {
+            GetItemEnhancedRequest request = GetItemEnhancedRequest.builder()
+                    .key(Key.builder().partitionValue(modelId).build())
+                    .consistentRead(true)
+                    .build();
+
+            DDBModel model = modelsTable.getItem(request);
+            if (model == null) {
+                throw new NotFoundException("Model not found");
+            }
+
+            return ModelStatus.valueOf(model.getModelStatus());
+        } catch (DynamoDbException | IllegalArgumentException e) {
+            log.error("[DynamoDB] Exception thrown getting model status {}", modelId, e);
+            throw new PersistenceException("Failed to get model status");
+        }
+    }
+
+    @Override
+    public void updateModelRunInformation(String modelId, ModelStatus modelStatus, String executionId)
+            throws PersistenceException, NotFoundException {
+        try {
+            DDBModel modelToUpdate = DDBModel.builder()
+                    .modelId(modelId)
+                    .modelStatus(modelStatus.toString())
+                    .modelWorkflowExecution(executionId)
+                    .build();
+
+            UpdateItemEnhancedRequest<DDBModel> request = UpdateItemEnhancedRequest.builder(DDBModel.class)
+                    .item(modelToUpdate)
+                    .conditionExpression(Expression.builder()
+                            .expression("attribute_exists(#modelId)")
+                            .putExpressionName("#modelId", "modelId")
+                            .build())
+                    .ignoreNulls(true)
+                    .build();
+
+            modelsTable.updateItem(request);
+        } catch (ConditionalCheckFailedException e) {
+            log.error("[DynamoDB] Conditional check failed when updating model run information for model {}", modelId, e);
+            throw new NotFoundException("Model not found");
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown updating model run information for model {}", modelId, e);
+            throw new PersistenceException("Failed to update model run information");
         }
     }
 
