@@ -11,17 +11,14 @@ import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.*;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.Projection;
+import software.amazon.awssdk.services.dynamodb.model.ProjectionType;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -34,6 +31,7 @@ public class DDBModelDAOTest {
     private static final String USER = "USER";
     private LocalDynamoDB localDynamoDB = new LocalDynamoDB();
     private DynamoDbTable<DDBModel> modelsTable;
+    private DynamoDbIndex<DDBModel> userModelsIndex;
     private DDBModelDAO modelDAO;
 
     @BeforeEach
@@ -49,9 +47,20 @@ public class DDBModelDAOTest {
 
         modelsTable = spy(enhancedClient.table("Models", modelTableSchema));
 
-        modelsTable.createTable();
+        EnhancedGlobalSecondaryIndex userIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("userModelsIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
 
-        modelDAO = new DDBModelDAO(modelsTable);
+        modelsTable.createTable(CreateTableEnhancedRequest.builder()
+                .globalSecondaryIndices(userIndex)
+                .build());
+
+        userModelsIndex = spy(modelsTable.index("userModelsIndex"));
+
+        modelDAO = new DDBModelDAO(modelsTable, userModelsIndex);
     }
 
     @Test
@@ -63,7 +72,7 @@ public class DDBModelDAOTest {
         assertThat(model).isNotNull();
         assertThat(model.getUserCreatedBy()).isEqualTo(USER);
         assertThat(model.getModelConfiguration().getLeague()).isEqualTo(League.NFL);
-        assertThat(model.getModelStatus()).isEqualTo(ModelStatus.CREATING.toString());
+        assertThat(model.getModelStatus()).isEqualTo(ModelStatus.CREATING);
     }
 
     @Test
@@ -149,6 +158,41 @@ public class DDBModelDAOTest {
                 .build());
 
         assertThatThrownBy(() -> modelDAO.getModelFromId(modelId)).isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void getModelsForUser_successTest() throws PersistenceException {
+        String modelId1 = modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        String modelId2 = modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        //Create 3rd model not created by user just to ensure accuracy.
+        modelDAO.createModel("notUser", ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        List<DDBModel> modelsForUser = modelDAO.getModelsForUser(USER);
+        assertThat(modelsForUser.size()).isEqualTo(2);
+        assertThat(modelsForUser.get(0).getModelId()).isEqualTo(modelId1);
+        assertThat(modelsForUser.get(1).getModelId()).isEqualTo(modelId2);
+    }
+
+    @Test
+    public void getModelsForUser_noModels() throws PersistenceException {
+        List<DDBModel> modelsForUser = modelDAO.getModelsForUser(USER);
+        assertThat(modelsForUser).isEmpty();
+    }
+
+    @Test
+    public void getModelsForUser_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(userModelsIndex).query(any(QueryEnhancedRequest.class));
+
+        assertThatThrownBy(() -> modelDAO.getModelsForUser(USER))
+                .isInstanceOf(PersistenceException.class);
     }
 
     @Test

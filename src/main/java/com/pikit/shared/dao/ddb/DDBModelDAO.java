@@ -8,26 +8,29 @@ import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.model.DeleteItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.GetItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
-import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DDBModelDAO implements ModelDAO {
 
     private DynamoDbTable<DDBModel> modelsTable;
+    private DynamoDbIndex<DDBModel> userModelsIndex;
 
-    public DDBModelDAO(DynamoDbTable<DDBModel> modelsTable) {
+    public DDBModelDAO(DynamoDbTable<DDBModel> modelsTable, DynamoDbIndex<DDBModel> userModelsIndex) {
         this.modelsTable = modelsTable;
+        this.userModelsIndex = userModelsIndex;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class DDBModelDAO implements ModelDAO {
                 .userCreatedBy(userId)
                 .creationTimestamp(creationTimestamp)
                 .modelConfiguration(modelConfiguration)
-                .modelStatus(ModelStatus.CREATING.toString())
+                .modelStatus(ModelStatus.CREATING)
                 .build();
 
         try {
@@ -103,6 +106,25 @@ public class DDBModelDAO implements ModelDAO {
     }
 
     @Override
+    public List<DDBModel> getModelsForUser(String user) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(user)
+                            .build()))
+                    .build();
+
+            return userModelsIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown retrieving models for user {}", user, e);
+            throw new PersistenceException("Failed to get models for user");
+        }
+    }
+
+    @Override
     public void updateModelAfterModelRun(String modelId, ModelPerformance modelPerformance) throws PersistenceException, NotFoundException{
         try {
             DDBModel modelToUpdate = DDBModel.builder()
@@ -157,7 +179,7 @@ public class DDBModelDAO implements ModelDAO {
                 throw new NotFoundException("Model not found");
             }
 
-            return ModelStatus.valueOf(model.getModelStatus());
+            return model.getModelStatus();
         } catch (DynamoDbException | IllegalArgumentException e) {
             log.error("[DynamoDB] Exception thrown getting model status {}", modelId, e);
             throw new PersistenceException("Failed to get model status");
@@ -170,7 +192,7 @@ public class DDBModelDAO implements ModelDAO {
         try {
             DDBModel modelToUpdate = DDBModel.builder()
                     .modelId(modelId)
-                    .modelStatus(modelStatus.toString())
+                    .modelStatus(modelStatus)
                     .modelWorkflowExecution(executionId)
                     .build();
 

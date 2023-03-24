@@ -40,6 +40,14 @@ public interface ModelDAO {
     Optional<DDBModel> getModelFromId(String modelId) throws PersistenceException;
 
     /**
+     * Given a user, retrieve all models created by that user
+     * @param user User to retrieve models for
+     * @return List of models that this user created
+     * @throws PersistenceException
+     */
+    List<DDBModel> getModelsForUser(String user) throws PersistenceException;
+
+    /**
      * Given model, and all data associated with it, update the model object after the latest run.
      * @param modelId ID of the model to update
      * @param modelPerformance Performance of the model

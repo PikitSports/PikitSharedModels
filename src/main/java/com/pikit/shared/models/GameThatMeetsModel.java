@@ -13,6 +13,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 @ToString
 public class GameThatMeetsModel {
+    private String gameId;
     private HashMap<Bet, BetResult> bets;
     private HashMap<String, String> homeTeamStats;
     private HashMap<String, String> awayTeamStats;

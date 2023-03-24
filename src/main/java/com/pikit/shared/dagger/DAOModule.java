@@ -20,6 +20,7 @@ public class DAOModule {
     private static final String GAMES_THAT_MEET_MODEL_TABLE_NAME = "GamesThatMeetModel";
     private static final String UPCOMING_GAMES_TABLE_NAME = "UpcomingGamesForModel";
     private static final String MODEL_ID_INDEX = "modelIdIndex";
+    private static final String USER_MODELS_INDEX = "userModelsIndex";
 
     @Provides
     @Reusable
@@ -31,7 +32,8 @@ public class DAOModule {
     @Reusable
     static DDBModelDAO modelDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         DynamoDbTable<DDBModel> modelsTable = dynamoDbEnhancedClient.table(MODELS_TABLE_NAME, TableSchema.fromBean(DDBModel.class));
-        return new DDBModelDAO(modelsTable);
+        DynamoDbIndex<DDBModel> userModelsIndex = modelsTable.index(USER_MODELS_INDEX);
+        return new DDBModelDAO(modelsTable, userModelsIndex);
     }
 
     @Provides

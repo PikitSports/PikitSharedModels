@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DDBGamesThatMeetModelDAOTest {
     private static final String MODEL_ID = "modelId";
     private static final String SEASON = "season";
+    private static final String GAME = "game";
     private LocalDynamoDB localDynamoDB = new LocalDynamoDB();
     private DynamoDbEnhancedClient enhancedClient;
     private DynamoDbTable<DDBGamesThatMeetModel> gamesThatMeetModelTable;
@@ -78,6 +78,8 @@ public class DDBGamesThatMeetModelDAOTest {
         assertThat(gamesThatMeetModel).isNotNull();
         assertThat(gamesThatMeetModel.size()).isEqualTo(2);
         assertThat(gamesThatMeetModel.get(0).getModelId()).isEqualTo(MODEL_ID);
+        assertThat(gamesThatMeetModel.get(0).getSeason()).isEqualTo(SEASON);
+        assertThat(gamesThatMeetModel.get(0).getGames().get(0).getGameId()).isEqualTo(GAME);
     }
 
     @Test
@@ -125,6 +127,9 @@ public class DDBGamesThatMeetModelDAOTest {
         assertThat(gamesThatMeetModel.size()).isEqualTo(2);
         assertThat(gamesThatMeetModel.get(0).getModelId()).isEqualTo(MODEL_ID);
         assertThat(gamesThatMeetModel.get(0).getId()).isEqualTo(MODEL_ID + "|" + SEASON);
+        assertThat(gamesThatMeetModel.get(0).getSeason()).isEqualTo(SEASON);
+        assertThat(gamesThatMeetModel.get(0).getGames().size()).isEqualTo(1);
+        assertThat(gamesThatMeetModel.get(0).getGames().get(0).getGameId()).isEqualTo(GAME);
     }
 
     @Test
@@ -158,7 +163,9 @@ public class DDBGamesThatMeetModelDAOTest {
     private TreeMap<String, List<GameThatMeetsModel>> getListOfGamesThatMeetModel() {
         TreeMap<String, List<GameThatMeetsModel>> gamesThatMeetModel = new TreeMap<>();
         List<GameThatMeetsModel> games = new ArrayList<>();
-        games.add(GameThatMeetsModel.builder().build());
+        games.add(GameThatMeetsModel.builder()
+                .gameId(GAME)
+                .build());
         gamesThatMeetModel.put(SEASON, games);
         gamesThatMeetModel.put("2023", games);
         return gamesThatMeetModel;

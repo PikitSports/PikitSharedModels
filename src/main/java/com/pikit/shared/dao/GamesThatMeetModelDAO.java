@@ -1,12 +1,11 @@
 package com.pikit.shared.dao;
 
 import com.pikit.shared.dao.ddb.model.DDBGamesThatMeetModel;
-import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
 
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 public interface GamesThatMeetModelDAO {
     /**
@@ -14,7 +13,7 @@ public interface GamesThatMeetModelDAO {
      * @param modelId ID of the model that the games are for.
      * @param gamesThatMeetModel A map of Seasons to List of Games.
      */
-    void addGamesThatMeetModel(String modelId, TreeMap<String, List<GameThatMeetsModel>> gamesThatMeetModel) throws PersistenceException;
+    void addGamesThatMeetModel(String modelId, Map<String, List<GameThatMeetsModel>> gamesThatMeetModel) throws PersistenceException;
 
     /**
      * Given a modelId and a Season, delete all games that met model during that season.

@@ -55,7 +55,7 @@ public class DDBModel {
     private Long lastUpdatedTimestamp;
 
     @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_STATUS_ATTRIBUTE)})
-    private String modelStatus;
+    private ModelStatus modelStatus;
 
     @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_WORKFLOW_EXECUTION_ATTRIBUTE)})
     private String modelWorkflowExecution;

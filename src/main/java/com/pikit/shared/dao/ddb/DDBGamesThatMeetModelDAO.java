@@ -2,11 +2,8 @@ package com.pikit.shared.dao.ddb;
 
 import com.pikit.shared.dao.GamesThatMeetModelDAO;
 import com.pikit.shared.dao.ddb.model.DDBGamesThatMeetModel;
-import com.pikit.shared.dao.ddb.model.DDBUpcomingGame;
-import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
-import com.pikit.shared.models.GamesThatMeetModel;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
@@ -36,7 +33,7 @@ public class DDBGamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     }
 
     @Override
-    public void addGamesThatMeetModel(String modelId, TreeMap<String, List<GameThatMeetsModel>> gamesThatMeetModel) throws PersistenceException {
+    public void addGamesThatMeetModel(String modelId, Map<String, List<GameThatMeetsModel>> gamesThatMeetModel) throws PersistenceException {
         try {
             List<WriteBatch> writeBatchList = new ArrayList<>();
 
@@ -47,10 +44,9 @@ public class DDBGamesThatMeetModelDAO implements GamesThatMeetModelDAO {
 
                 DDBGamesThatMeetModel gamesThatMeetModelItem = DDBGamesThatMeetModel.builder()
                         .id(key)
-                        .games(GamesThatMeetModel.builder()
-                                .games(gamesThatMeetModelList)
-                                .build())
+                        .games(gamesThatMeetModelList)
                         .modelId(modelId)
+                        .season(season)
                         .build();
 
                 writeBatchList.add(WriteBatch.builder(DDBGamesThatMeetModel.class)
