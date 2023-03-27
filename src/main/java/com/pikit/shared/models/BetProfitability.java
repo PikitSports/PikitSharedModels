@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BetProfitability {
-    private Bet bet;
     private int wins;
     private int losses;
     private int pushes;

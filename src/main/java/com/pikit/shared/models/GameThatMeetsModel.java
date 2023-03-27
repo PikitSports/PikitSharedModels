@@ -5,6 +5,7 @@ import com.pikit.shared.enums.BetResult;
 import lombok.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -14,9 +15,9 @@ import java.util.HashMap;
 @ToString
 public class GameThatMeetsModel {
     private String gameId;
-    private HashMap<Bet, BetResult> bets;
-    private HashMap<String, String> homeTeamStats;
-    private HashMap<String, String> awayTeamStats;
-    private HashMap<String, String> gameStats;
-    private HashMap<String, String> bettingStats;
+    private Map<Bet, BetResult> bets;
+    private Map<String, String> homeTeamStats;
+    private Map<String, String> awayTeamStats;
+    private Map<String, String> gameStats;
+    private Map<String, String> bettingStats;
 }
