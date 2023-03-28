@@ -1,9 +1,9 @@
 package com.pikit.shared.models;
 
-import com.sun.tools.javac.util.List;
 import lombok.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Getter
 @Setter

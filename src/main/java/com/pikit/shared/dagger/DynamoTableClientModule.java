@@ -2,7 +2,6 @@ package com.pikit.shared.dagger;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import dagger.Module;
 import dagger.Provides;
 import dagger.Reusable;
