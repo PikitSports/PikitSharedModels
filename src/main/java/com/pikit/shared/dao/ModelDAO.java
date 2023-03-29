@@ -1,12 +1,10 @@
 package com.pikit.shared.dao;
 
 import com.pikit.shared.dao.ddb.model.ModelStatus;
-import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
-import com.pikit.shared.models.TopGameData;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 
 import java.util.List;

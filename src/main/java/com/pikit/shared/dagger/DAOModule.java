@@ -1,11 +1,14 @@
 package com.pikit.shared.dagger;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pikit.shared.dao.ddb.DDBGamesThatMeetModelDAO;
 import com.pikit.shared.dao.ddb.DDBModelDAO;
 import com.pikit.shared.dao.ddb.DDBUpcomingGamesDAO;
 import com.pikit.shared.dao.ddb.model.DDBGamesThatMeetModel;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 import com.pikit.shared.dao.ddb.model.DDBUpcomingGame;
+import com.pikit.shared.dao.s3.S3DataSourceDAO;
 import dagger.Module;
 import dagger.Provides;
 import dagger.Reusable;
@@ -14,6 +17,8 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
+import javax.inject.Named;
+
 @Module
 public class DAOModule {
     private static final String MODELS_TABLE_NAME = "Models";
@@ -21,6 +26,7 @@ public class DAOModule {
     private static final String UPCOMING_GAMES_TABLE_NAME = "UpcomingGamesForModel";
     private static final String MODEL_ID_INDEX = "modelIdIndex";
     private static final String USER_MODELS_INDEX = "userModelsIndex";
+    private static final String GAMES_BUCKET_NAME_KEY = "GAMES_BUCKET_NAME";
 
     @Provides
     @Reusable
@@ -53,5 +59,12 @@ public class DAOModule {
         DynamoDbIndex<DDBUpcomingGame> modelIdIndex = upcomingGamesTable.index(MODEL_ID_INDEX);
 
         return new DDBUpcomingGamesDAO(dynamoDbEnhancedClient, upcomingGamesTable, modelIdIndex);
+    }
+
+    @Provides
+    @Reusable
+    static S3DataSourceDAO dataSourceDAO(AmazonS3 amazonS3, ObjectMapper objectMapper) {
+        String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
+        return new S3DataSourceDAO(amazonS3, gamesBucketName, objectMapper);
     }
 }
