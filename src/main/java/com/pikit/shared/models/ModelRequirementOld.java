@@ -15,14 +15,16 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ModelRequirement {
+public class ModelRequirementOld {
     private boolean forOpponent;
     private String description;
     private FilterType filterType;
-    private String statUsed;
-    private boolean comparingOpponent;
-    private double comparisonValue;
+    private List<String> statsUsed;
+    private ComparisonOperation comparisonOperation;
     private ConditionRequirement conditionRequirement;
-    private List<String> acceptedStringValues;
-    private boolean expectedBooleanValue;
+    private double conditionValue;
+    private List<String> acceptedExactValues;
+    private String acceptedStartRangeValue;
+    private String acceptedEndRangeValue;
+    private boolean statExpectedValue;
 }
