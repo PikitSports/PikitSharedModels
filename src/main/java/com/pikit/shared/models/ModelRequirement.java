@@ -19,7 +19,6 @@ import java.util.List;
 public class ModelRequirement {
     private boolean forOpponent;
     private String description;
-    private FilterType filterType;
     private String statUsed;
     private boolean comparingOpponent;
     private double comparisonValue;
