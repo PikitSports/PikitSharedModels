@@ -93,6 +93,25 @@ public class DDBGamesThatMeetModelDAOTest {
     }
 
     @Test
+    public void addGamesThatMeetModelForSeason_successTest() throws PersistenceException {
+        gamesThatMeetModelDAO.addGamesThatMeetModel(MODEL_ID, SEASON, getListOfGamesThatMeetModel().get(SEASON));
+
+        List<DDBGamesThatMeetModel> gamesThatMeetModel = callDynamoToGetGamesThatMeetModel(MODEL_ID);
+
+        assertThat(gamesThatMeetModel.size()).isEqualTo(1);
+        assertThat(gamesThatMeetModel.get(0).getSeason()).isEqualTo(SEASON);
+        assertThat(gamesThatMeetModel.get(0).getGames().get(0).getGameId()).isEqualTo(GAME);
+    }
+
+    @Test
+    public void addGamesThatMeetModelForSeason_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(gamesThatMeetModelTable).putItem(any(PutItemEnhancedRequest.class));
+
+        assertThatThrownBy(() -> gamesThatMeetModelDAO.addGamesThatMeetModel(MODEL_ID, SEASON, getListOfGamesThatMeetModel().get(SEASON)))
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
     public void deleteGamesThatMeetModel_success() throws PersistenceException {
         gamesThatMeetModelDAO.addGamesThatMeetModel(MODEL_ID, getListOfGamesThatMeetModel());
         List<DDBGamesThatMeetModel> gamesThatMeetModel = callDynamoToGetGamesThatMeetModel(MODEL_ID);

@@ -66,6 +66,27 @@ public class DDBGamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     }
 
     @Override
+    public void addGamesThatMeetModel(String modelId, String season, List<GameThatMeetsModel> gamesThatMeetModel) throws PersistenceException {
+        try {
+            String key = modelId + "|" + season;
+
+            DDBGamesThatMeetModel gamesThatMeetModelItem = DDBGamesThatMeetModel.builder()
+                    .id(key)
+                    .games(gamesThatMeetModel)
+                    .modelId(modelId)
+                    .season(season)
+                    .build();
+
+            gamesThatMeetModelTable.putItem(PutItemEnhancedRequest.builder(DDBGamesThatMeetModel.class)
+                    .item(gamesThatMeetModelItem)
+                    .build());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown adding games that meet model {} for season {}", modelId, season, e);
+            throw new PersistenceException("Failed to add games that meet model for season");
+        }
+    }
+
+    @Override
     public void deleteOldGamesThatMetModel(String modelId, String season) throws PersistenceException {
         try {
             String key = modelId + "|" + season;

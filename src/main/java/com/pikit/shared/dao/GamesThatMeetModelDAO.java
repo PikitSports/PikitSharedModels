@@ -16,6 +16,15 @@ public interface GamesThatMeetModelDAO {
     void addGamesThatMeetModel(String modelId, Map<String, List<GameThatMeetsModel>> gamesThatMeetModel) throws PersistenceException;
 
     /**
+     * Given a model, a season and the games that meet model for that season, store this data
+     * @param modelId ID of the model that the games are for
+     * @param season Season for the games
+     * @param gamesThatMeetModel Games that met the model
+     * @throws PersistenceException
+     */
+    void addGamesThatMeetModel(String modelId, String season, List<GameThatMeetsModel> gamesThatMeetModel) throws PersistenceException;
+
+    /**
      * Given a modelId and a Season, delete all games that met model during that season.
      * @param modelId ID of the model to delete games for
      * @param season Season that we should delete games for.

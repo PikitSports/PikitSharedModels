@@ -14,6 +14,5 @@ import java.util.HashMap;
 public class DataSourceConfig {
     private String startSeason;
     private String endSeason;
-    private boolean multiYear;
     private HashMap<String, StatMetadata> statsAvailable;
 }

@@ -34,7 +34,7 @@ public class Game {
         String homeTeam = gameStats.get(HOME_TEAM);
         String awayTeam = gameStats.get(AWAY_TEAM);
         String gameDate = gameStats.get(GAME_DATE);
-        String numGameForDay = gameStats.get(NUM_GAME_FOR_DAY);
+        String numGameForDay = gameStats.getOrDefault(NUM_GAME_FOR_DAY, "1");
 
         return String.format("%s|%s|%s|%s", homeTeam, awayTeam, gameDate, numGameForDay);
     }

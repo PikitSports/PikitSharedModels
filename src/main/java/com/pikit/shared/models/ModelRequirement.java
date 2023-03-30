@@ -1,5 +1,6 @@
 package com.pikit.shared.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pikit.shared.enums.ComparisonOperation;
 import com.pikit.shared.enums.ConditionRequirement;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelRequirement {
     private boolean forOpponent;
     private String description;
