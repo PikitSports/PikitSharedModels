@@ -3,9 +3,9 @@ package com.pikit.shared.dagger;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pikit.shared.dao.ddb.DDBGamesThatMeetModelDAO;
-import com.pikit.shared.dao.ddb.DDBModelDAO;
-import com.pikit.shared.dao.ddb.DDBUpcomingGamesDAO;
+import com.pikit.shared.dao.GamesThatMeetModelDAO;
+import com.pikit.shared.dao.ModelDAO;
+import com.pikit.shared.dao.UpcomingGamesDAO;
 import com.pikit.shared.util.PikitSharedUtils;
 import dagger.Component;
 import javax.inject.Named;
@@ -25,9 +25,9 @@ public interface ServiceComponent {
     ObjectMapper getObjectMapper();
     AmazonS3 getS3Client();
     PikitSharedUtils getSharedUtil();
-    DDBModelDAO modelDAO();
-    DDBGamesThatMeetModelDAO gamesThatMeetModelDAO();
-    DDBUpcomingGamesDAO upcomingGamesDAO();
+    ModelDAO modelDAO();
+    GamesThatMeetModelDAO gamesThatMeetModelDAO();
+    UpcomingGamesDAO upcomingGamesDAO();
 
     //Dynamo Tables
     @Named("nflGamesTable")

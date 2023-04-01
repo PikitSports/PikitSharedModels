@@ -1,8 +1,6 @@
 package com.pikit.shared.dao;
 
-import com.pikit.shared.dao.ddb.DDBGamesThatMeetModelDAO;
 import com.pikit.shared.dao.ddb.DDBUpcomingGamesDAO;
-import com.pikit.shared.dao.ddb.model.DDBGamesThatMeetModel;
 import com.pikit.shared.dao.ddb.model.DDBUpcomingGame;
 import com.pikit.shared.dynamodb.LocalDynamoDB;
 import com.pikit.shared.exceptions.PersistenceException;

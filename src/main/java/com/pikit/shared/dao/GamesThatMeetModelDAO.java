@@ -32,10 +32,11 @@ public interface GamesThatMeetModelDAO {
     void deleteOldGamesThatMetModel(String modelId, String season) throws PersistenceException;
 
     /**
-     * Given a modelId, retrieve all games that meet model
+     * Given a modelId and season, retrieve all games that meet model for that season
      * @param modelId ID of the model to retrieve games for
+     * @param season Season to retrieve models for
      * @return List of games that meet model
      * @throws PersistenceException
      */
-    List<DDBGamesThatMeetModel> getGamesThatMeetModel(String modelId) throws PersistenceException;
+    List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException;
 }

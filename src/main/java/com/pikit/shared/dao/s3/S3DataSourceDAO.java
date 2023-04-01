@@ -74,7 +74,6 @@ public class S3DataSourceDAO implements DataSourceDAO {
         selectRequest.setInputSerialization(inputSerialization);
         selectRequest.setOutputSerialization(outputSerialization);
 
-
         try (SelectObjectContentResult result = amazonS3.selectObjectContent(selectRequest)) {
             try (InputStream resultInputStream = result.getPayload().getRecordsInputStream(
                     new SelectObjectContentEventVisitor() {
