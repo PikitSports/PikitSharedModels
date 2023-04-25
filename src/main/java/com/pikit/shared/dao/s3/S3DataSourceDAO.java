@@ -27,7 +27,7 @@ import java.util.zip.GZIPOutputStream;
 
 @Slf4j
 public class S3DataSourceDAO implements DataSourceDAO {
-    private static final String DATA_SOURCE_KEY = "%s/%s.json.gz";
+    private static final String DATA_SOURCE_KEY = "%s/finalized/%s.json.gz";
     private static final String DATA_SOURCE_CONFIG_KEY = "%s/dataSourceConfig.json";
     private final AmazonS3 amazonS3;
     private final String bucketName;

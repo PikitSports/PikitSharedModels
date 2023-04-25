@@ -109,7 +109,7 @@ public class S3GamesThatMeetModelDAOTest {
         List<GameThatMeetsModel> gamesThatMeetModel = new ArrayList<>();
         gamesThatMeetModel.add(GameThatMeetsModel.builder().gameId(GAME).build());
 
-        when(s3Client.getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class))).thenReturn(gamesThatMeetModel);
+        when(s3Client.getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class), eq(false))).thenReturn(gamesThatMeetModel);
         List<GameThatMeetsModel> gamesThatMeetModelForSeason = s3GamesThatMeetModelDAO.getGamesThatMeetModelForSeason(MODEL_ID, SEASON);
 
         assertThat(gamesThatMeetModelForSeason).isNotNull();
@@ -119,7 +119,7 @@ public class S3GamesThatMeetModelDAOTest {
 
     @Test
     public void getGamesThatMeetModel_noneExist() throws PersistenceException, IOException {
-        when(s3Client.getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class))).thenReturn(Collections.emptyList());
+        when(s3Client.getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class), eq(false))).thenReturn(Collections.emptyList());
         List<GameThatMeetsModel> gamesThatMeetModel = s3GamesThatMeetModelDAO.getGamesThatMeetModelForSeason(MODEL_ID, SEASON);
         assertThat(gamesThatMeetModel).isNotNull();
         assertThat(gamesThatMeetModel.size()).isEqualTo(0);
@@ -127,7 +127,7 @@ public class S3GamesThatMeetModelDAOTest {
 
     @Test
     public void getGamesThatMeetModel_exceptionThrown() throws IOException {
-        doThrow(SdkClientException.class).when(s3Client).getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class));
+        doThrow(SdkClientException.class).when(s3Client).getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class), eq(false));
 
         assertThatThrownBy(() -> s3GamesThatMeetModelDAO.getGamesThatMeetModelForSeason(MODEL_ID, SEASON))
                 .isInstanceOf(PersistenceException.class);
