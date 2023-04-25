@@ -102,6 +102,10 @@ public class Game {
             return 0.0;
         }
 
+        if (value == null) {
+            return Double.NaN;
+        }
+
         return Double.parseDouble(value);
     }
 }
