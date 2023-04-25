@@ -1,10 +1,10 @@
 package com.pikit.shared.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -32,8 +32,7 @@ public class Game {
     private HashMap<String, String> awayTeamStats;
     private HashMap<String, String> bettingStats;
 
-    @JsonIgnore
-    public String getGameId() {
+    public String gameId() {
         String homeTeam = gameStats.get(HOME_TEAM);
         String awayTeam = gameStats.get(AWAY_TEAM);
         String gameDate = gameStats.get(GAME_DATE);
@@ -42,68 +41,57 @@ public class Game {
         return String.format("%s|%s|%s|%s", homeTeam, awayTeam, gameDate, numGameForDay);
     }
 
-    @JsonIgnore
-    public String getGameWinner() {
+    public String gameWinner() {
         return gameStats.get(GAME_WINNER);
     }
 
-    @JsonIgnore
-    public String getHomeTeam() {
+    public String homeTeam() {
         return gameStats.get(HOME_TEAM);
     }
 
-    @JsonIgnore
-    public String getAwayTeam() {
+    public String awayTeam() {
         return gameStats.get(AWAY_TEAM);
     }
 
-    @JsonIgnore
-    public String getTeamThatCoveredTheSpread() {
+    public String teamThatCoveredTheSpread() {
         return gameStats.get(TEAM_THAT_COVERED_THE_SPREAD);
     }
 
-    @JsonIgnore
-    public Double getHomeTeamMoneyLine() {
+    public Double homeTeamMoneyLine() {
         return getSanitizedDouble(bettingStats.get(HOME_TEAM_MONEY_LINE));
     }
 
-    @JsonIgnore
-    public Double getAwayTeamMoneyLine() {
+    public Double awayTeamMoneyLine() {
         return getSanitizedDouble(bettingStats.get(AWAY_TEAM_MONEY_LINE));
     }
 
-    @JsonIgnore
-    public Double getHomeTeamSpread() {
+    public Double homeTeamSpread() {
         return getSanitizedDouble(bettingStats.get(HOME_TEAM_SPREAD));
     }
 
-    @JsonIgnore
-    public Double getAwayTeamSpread() {
+    public Double awayTeamSpread() {
         return getSanitizedDouble(bettingStats.get(AWAY_TEAM_SPREAD));
     }
 
-    @JsonIgnore
-    public Double getOverUnder() {
+    public Double overUnder() {
         return getSanitizedDouble(bettingStats.get(OVER_UNDER));
     }
 
-    @JsonIgnore
-    public Double getHomeTeamScore() {
+    public Double homeTeamScore() {
         return getSanitizedDouble(homeTeamStats.get(FINAL));
     }
 
-    @JsonIgnore
-    public Double getAwayTeamScore() {
+    public Double awayTeamScore() {
         return getSanitizedDouble(awayTeamStats.get(FINAL));
     }
 
     private Double getSanitizedDouble(String value) {
-        if (List.of("pk", "PK", "x", "-", "NL", "").contains(value)) {
-            return 0.0;
+        if (value == null) {
+            return null;
         }
 
-        if (value == null) {
-            return Double.NaN;
+        if (List.of("pk", "PK", "x", "-", "NL", "").contains(value)) {
+            return 0.0;
         }
 
         return Double.parseDouble(value);
