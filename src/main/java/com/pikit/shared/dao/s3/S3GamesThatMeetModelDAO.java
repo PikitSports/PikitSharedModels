@@ -52,7 +52,7 @@ public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     @Override
     public List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException {
         try {
-            return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<>(){}, false);
+            return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<List<GameThatMeetsModel>>(){}, false);
         } catch (SdkClientException | IOException e) {
             log.error("[S3] Exception thrown getting games that meet model {} for season {}", modelId, season, e);
             throw new PersistenceException("Failed to get games that meet model for season");

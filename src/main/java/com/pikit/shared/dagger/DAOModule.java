@@ -27,7 +27,7 @@ public class DAOModule {
     private static final String UPCOMING_GAMES_TABLE_NAME = "UpcomingGamesForModel";
     private static final String MODEL_ID_INDEX = "modelIdIndex";
     private static final String USER_MODELS_INDEX = "userModelsIndex";
-    private static final String GAMES_BUCKET_NAME_KEY = "GAMES_BUCKET_NAME";
+    private static final String GAMES_BUCKET_NAME_KEY = "SLICK_PICK_GAMES_BUCKET";
     private static final String GAMES_THAT_MEET_MODEL_BUCKET_NAME_KEY = "GAMES_THAT_MEET_MODEL_BUCKET_NAME";
 
     @Provides
