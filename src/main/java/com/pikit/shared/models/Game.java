@@ -85,6 +85,13 @@ public class Game {
         return getSanitizedDouble(awayTeamStats.get(FINAL));
     }
 
+    public void mergeGame(Game gameToMerge) {
+        gameStats.putAll(gameToMerge.getGameStats());
+        bettingStats.putAll(gameToMerge.getBettingStats());
+        homeTeamStats.putAll(gameToMerge.getHomeTeamStats());
+        awayTeamStats.putAll(gameToMerge.getAwayTeamStats());
+    }
+
     private Double getSanitizedDouble(String value) {
         if (value == null) {
             return null;
