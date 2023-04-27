@@ -86,12 +86,9 @@ public class S3Client {
                 .collect(Collectors.toList());
     }
 
-    public <T> void clearObjectsFromS3(String bucketName, String path) {
+    public <T> void clearObjectsFromS3(String bucketName, String path) throws AmazonS3Exception {
         List<String> keysInPath = getListOfKeysFromS3Path(bucketName, path);
-
-        keysInPath.forEach(key -> {
-            s3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
-        });
+        keysInPath.forEach(key -> deleteObjectFromS3(bucketName, key));
     }
 
     private List<String> getListOfKeysFromS3Path(String bucketName, String path) {
