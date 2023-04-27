@@ -27,16 +27,16 @@ public class Game {
     private static final String OVER_UNDER = "overUnder";
 
     //Fields to serialize
-    private HashMap<String, String> gameStats;
-    private HashMap<String, String> homeTeamStats;
-    private HashMap<String, String> awayTeamStats;
-    private HashMap<String, String> bettingStats;
+    private Map<String, String> gameStats;
+    private Map<String, String> homeTeamStats;
+    private Map<String, String> awayTeamStats;
+    private Map<String, String> bettingStats;
 
     public String gameId() {
         String homeTeam = gameStats.get(HOME_TEAM);
         String awayTeam = gameStats.get(AWAY_TEAM);
         String gameDate = gameStats.get(GAME_DATE);
-        String numGameForDay = gameStats.getOrDefault(NUM_GAME_FOR_DAY, "1");
+        String numGameForDay = gameStats.getOrDefault(NUM_GAME_FOR_DAY, "0");
 
         return String.format("%s|%s|%s|%s", homeTeam, awayTeam, gameDate, numGameForDay);
     }
@@ -52,6 +52,10 @@ public class Game {
     public String awayTeam() {
         return gameStats.get(AWAY_TEAM);
     }
+
+    public String gameDate() { return gameStats.get(GAME_DATE); }
+
+    public String numGameForDay() { return gameStats.get(NUM_GAME_FOR_DAY); }
 
     public String teamThatCoveredTheSpread() {
         return gameStats.get(TEAM_THAT_COVERED_THE_SPREAD);
@@ -90,6 +94,38 @@ public class Game {
         bettingStats.putAll(gameToMerge.getBettingStats());
         homeTeamStats.putAll(gameToMerge.getHomeTeamStats());
         awayTeamStats.putAll(gameToMerge.getAwayTeamStats());
+    }
+
+    public static Game fromGameAndBettingStats(GameStats gameStatsToMerge, BettingStats bettingStatsToMerge) {
+        Map<String, String> gameStats = new HashMap<>();
+        Map<String, String> bettingStats = new HashMap<>();
+
+        gameStats.put(HOME_TEAM, gameStatsToMerge.getHomeTeam());
+        gameStats.put(AWAY_TEAM, gameStatsToMerge.getAwayTeam());
+        gameStats.put(GAME_DATE, gameStatsToMerge.getGameDate());
+        gameStats.put(NUM_GAME_FOR_DAY, String.valueOf(gameStatsToMerge.getNumGameForDay()));
+
+        bettingStats.put(HOME_TEAM_MONEY_LINE, bettingStatsToMerge.getHomeTeamMoneyLine());
+        bettingStats.put(HOME_TEAM_SPREAD, bettingStatsToMerge.getHomeTeamSpread());
+        bettingStats.put(AWAY_TEAM_MONEY_LINE, bettingStatsToMerge.getAwayTeamMoneyLine());
+        bettingStats.put(AWAY_TEAM_SPREAD, bettingStatsToMerge.getAwayTeamSpread());
+        bettingStats.put(OVER_UNDER, bettingStatsToMerge.getOverUnder());
+
+        return Game.builder()
+                .gameStats(gameStats)
+                .bettingStats(bettingStats)
+                .homeTeamStats(new HashMap<>())
+                .awayTeamStats(new HashMap<>())
+                .build();
+    }
+
+    public GameStats toGameStats() {
+        return GameStats.builder()
+                .homeTeam(homeTeam())
+                .awayTeam(awayTeam())
+                .gameDate(gameDate())
+                .numGameForDay(Integer.parseInt(numGameForDay()))
+                .build();
     }
 
     private Double getSanitizedDouble(String value) {
