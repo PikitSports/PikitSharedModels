@@ -72,14 +72,9 @@ public class S3Client {
     }
 
     public <T> List<T> getListOfObjectsFromS3(String bucketName, String path, Class<T> clazz, boolean isZipped) throws AmazonS3Exception {
-        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
-                .withBucketName(bucketName)
-                .withPrefix(path);
+        List<String> keysInPath = getListOfKeysFromS3Path(bucketName, path);
 
-        ListObjectsV2Result listObjectsResult = s3Client.listObjectsV2(listObjectsV2Request);
-
-        return listObjectsResult.getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
+        return keysInPath.stream()
                 .map(key -> {
                     try {
                         return getObjectFromS3(bucketName, key, clazz, isZipped);
@@ -88,6 +83,26 @@ public class S3Client {
                         throw new RuntimeException("Failed to get object from S3");
                     }
                 })
+                .collect(Collectors.toList());
+    }
+
+    public <T> void clearObjectsFromS3(String bucketName, String path) {
+        List<String> keysInPath = getListOfKeysFromS3Path(bucketName, path);
+
+        keysInPath.forEach(key -> {
+            s3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
+        });
+    }
+
+    private List<String> getListOfKeysFromS3Path(String bucketName, String path) {
+        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withPrefix(path);
+
+        ListObjectsV2Result listObjectsResult = s3Client.listObjectsV2(listObjectsV2Request);
+
+        return listObjectsResult.getObjectSummaries().stream()
+                .map(S3ObjectSummary::getKey)
                 .collect(Collectors.toList());
     }
 
