@@ -1,5 +1,6 @@
 package com.pikit.shared.models;
 
+import com.pikit.shared.enums.League;
 import lombok.*;
 
 import java.util.HashMap;
@@ -26,6 +27,10 @@ public class Game {
     private static final String FINAL = "Final";
     private static final String OVER_UNDER = "overUnder";
 
+    private static final String SPORTS_REFERENCE_MLB_GAME_FORMAT= "%s.%s%s%s";
+    private static final String SPORTS_REFERENCE_NBA_GAME_FORMAT= "%s%s%s";
+    private static final String SPORTS_REFERENCE_NFL_GAME_FORMAT= "%s%s%s";
+
     //Fields to serialize
     private Map<String, String> gameStats;
     private Map<String, String> homeTeamStats;
@@ -39,6 +44,26 @@ public class Game {
         String numGameForDay = gameStats.getOrDefault(NUM_GAME_FOR_DAY, "0");
 
         return String.format("%s|%s|%s|%s", homeTeam, awayTeam, gameDate, numGameForDay);
+    }
+
+    public String s3GameId(League league) {
+        switch(league) {
+            case MLB:
+                return String.format(SPORTS_REFERENCE_MLB_GAME_FORMAT, homeTeam(), homeTeam(), sportsReferenceGameDate(), numGameForDay());
+            case NBA:
+                return String.format(SPORTS_REFERENCE_NBA_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), homeTeam());
+            case NFL:
+                return String.format(SPORTS_REFERENCE_NFL_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), homeTeam().toLowerCase());
+            default:
+                throw new RuntimeException("Invalid league");
+        }
+    }
+
+    //Our game date: 01/02/2023
+    //SR game date: 20230102
+    public String sportsReferenceGameDate() {
+        String[] dates = gameDate().split("/");
+        return dates[2] + dates[0] + dates[1];
     }
 
     public String gameWinner() {
