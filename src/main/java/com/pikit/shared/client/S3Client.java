@@ -75,6 +75,7 @@ public class S3Client {
         List<String> keysInPath = getListOfKeysFromS3Path(bucketName, path);
 
         return keysInPath.stream()
+                .filter(key -> !key.equals(path + "/"))
                 .map(key -> {
                     try {
                         return getObjectFromS3(bucketName, key, clazz, isZipped);
