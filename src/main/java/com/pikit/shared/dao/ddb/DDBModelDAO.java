@@ -2,13 +2,13 @@ package com.pikit.shared.dao.ddb;
 
 import com.pikit.shared.dao.ModelDAO;
 import com.pikit.shared.dao.ddb.model.ModelStatus;
+import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
@@ -25,12 +25,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DDBModelDAO implements ModelDAO {
 
-    private DynamoDbTable<DDBModel> modelsTable;
-    private DynamoDbIndex<DDBModel> userModelsIndex;
+    private final DynamoDbTable<DDBModel> modelsTable;
+    private final DynamoDbIndex<DDBModel> userModelsIndex;
+    private final DynamoDbIndex<DDBModel> leagueIndex;
 
-    public DDBModelDAO(DynamoDbTable<DDBModel> modelsTable, DynamoDbIndex<DDBModel> userModelsIndex) {
+    public DDBModelDAO(DynamoDbTable<DDBModel> modelsTable,
+                       DynamoDbIndex<DDBModel> userModelsIndex,
+                       DynamoDbIndex<DDBModel> leagueIndex) {
         this.modelsTable = modelsTable;
         this.userModelsIndex = userModelsIndex;
+        this.leagueIndex = leagueIndex;
     }
 
     @Override
@@ -44,6 +48,7 @@ public class DDBModelDAO implements ModelDAO {
                 .creationTimestamp(creationTimestamp)
                 .modelConfiguration(modelConfiguration)
                 .modelStatus(ModelStatus.CREATING)
+                .league(modelConfiguration.getLeague())
                 .build();
 
         try {
@@ -212,6 +217,25 @@ public class DDBModelDAO implements ModelDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown updating model run information for model {}", modelId, e);
             throw new PersistenceException("Failed to update model run information");
+        }
+    }
+
+    @Override
+    public List<DDBModel> getModelsForLeague(League league) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(league.toString())
+                            .build()))
+                    .build();
+
+            return leagueIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown retrieving models for league {}", league, e);
+            throw new PersistenceException("Failed to get models for league");
         }
     }
 

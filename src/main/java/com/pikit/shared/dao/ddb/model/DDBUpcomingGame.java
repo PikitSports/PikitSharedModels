@@ -1,6 +1,7 @@
 package com.pikit.shared.dao.ddb.model;
 
 import com.pikit.shared.dao.ddb.converter.UpcomingGameThatMeetsModelConverter;
+import com.pikit.shared.enums.League;
 import com.pikit.shared.models.UpcomingGameThatMeetsModel;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;

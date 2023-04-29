@@ -29,7 +29,7 @@ public class DDBUpcomingGamesDAO implements UpcomingGamesDAO {
     }
 
     @Override
-    public void addUpcomingGamesForModel(String modelId, String gameId, UpcomingGameThatMeetsModel upcomingGame) throws PersistenceException {
+    public void addUpcomingGameForModel(String modelId, String gameId, UpcomingGameThatMeetsModel upcomingGame) throws PersistenceException {
         try {
             upcomingGamesTable.putItem(PutItemEnhancedRequest.builder(DDBUpcomingGame.class)
                     .item(DDBUpcomingGame.builder()

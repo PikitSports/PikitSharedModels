@@ -1,6 +1,7 @@
 package com.pikit.shared.dao;
 
 import com.pikit.shared.dao.ddb.model.ModelStatus;
+import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
@@ -75,4 +76,12 @@ public interface ModelDAO {
      * @param workflowExecutionId Current ID of the execution running for the model.
      */
     void updateModelRunInformation(String modelId, ModelStatus modelStatus, String workflowExecutionId) throws PersistenceException, NotFoundException;
+
+    /**
+     * Given a league, retrieve all models that exist for this league. NOTE THAT THIS SHOULD BE UPDATED TO USE PAGINATION
+     * @param league League to retrieve models for
+     * @return List of all models that belong to this league
+     * @throws PersistenceException when we are unable to retrieve models for league.
+     */
+    List<DDBModel> getModelsForLeague(League league) throws PersistenceException;
 }

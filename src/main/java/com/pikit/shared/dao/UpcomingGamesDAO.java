@@ -14,7 +14,7 @@ public interface UpcomingGamesDAO {
      * @param upcomingGame Game information for the game to add
      * @throws PersistenceException
      */
-    void addUpcomingGamesForModel(String modelId, String gameId, UpcomingGameThatMeetsModel upcomingGame) throws PersistenceException;
+    void addUpcomingGameForModel(String modelId, String gameId, UpcomingGameThatMeetsModel upcomingGame) throws PersistenceException;
 
     /**
      * Given a modelId, return all upcoming games that meet the model

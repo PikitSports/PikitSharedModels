@@ -32,6 +32,7 @@ public class DDBModelDAOTest {
     private LocalDynamoDB localDynamoDB = new LocalDynamoDB();
     private DynamoDbTable<DDBModel> modelsTable;
     private DynamoDbIndex<DDBModel> userModelsIndex;
+    private DynamoDbIndex<DDBModel> leagueModelsIndex;
     private DDBModelDAO modelDAO;
 
     @BeforeEach
@@ -54,13 +55,21 @@ public class DDBModelDAOTest {
                         .build())
                 .build();
 
+        EnhancedGlobalSecondaryIndex leagueIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("leagueIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
+
         modelsTable.createTable(CreateTableEnhancedRequest.builder()
-                .globalSecondaryIndices(userIndex)
+                .globalSecondaryIndices(userIndex, leagueIndex)
                 .build());
 
         userModelsIndex = spy(modelsTable.index("userModelsIndex"));
+        leagueModelsIndex = spy(modelsTable.index("leagueIndex"));
 
-        modelDAO = new DDBModelDAO(modelsTable, userModelsIndex);
+        modelDAO = new DDBModelDAO(modelsTable, userModelsIndex, leagueModelsIndex);
     }
 
     @Test
@@ -338,6 +347,41 @@ public class DDBModelDAOTest {
     public void updateModelRunInformation_exceptionThrown() {
         doThrow(DynamoDbException.class).when(modelsTable).updateItem(any(UpdateItemEnhancedRequest.class));
         assertThatThrownBy(() -> modelDAO.updateModelRunInformation(MODEL, ModelStatus.IN_PROGRESS, null))
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void getModelsForLeague_successTest() throws PersistenceException {
+        String modelId1 = modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        String modelId2 = modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        //Create 3rd model not in NFL just to ensure accuracy.
+        modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.MLB)
+                .build());
+
+        List<DDBModel> modelsForLeague = modelDAO.getModelsForLeague(League.NFL);
+        assertThat(modelsForLeague.size()).isEqualTo(2);
+        assertThat(modelsForLeague.get(0).getModelId()).isEqualTo(modelId1);
+        assertThat(modelsForLeague.get(1).getModelId()).isEqualTo(modelId2);
+    }
+
+    @Test
+    public void getModelsForLeague_noModels() throws PersistenceException {
+        List<DDBModel> modelsForLeague = modelDAO.getModelsForLeague(League.NFL);
+        assertThat(modelsForLeague).isEmpty();
+    }
+
+    @Test
+    public void getModelsForLeague_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(leagueModelsIndex).query(any(QueryEnhancedRequest.class));
+
+        assertThatThrownBy(() -> modelDAO.getModelsForLeague(League.NFL))
                 .isInstanceOf(PersistenceException.class);
     }
 }

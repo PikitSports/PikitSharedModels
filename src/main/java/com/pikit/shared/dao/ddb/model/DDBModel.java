@@ -2,6 +2,7 @@ package com.pikit.shared.dao.ddb.model;
 
 import com.pikit.shared.dao.ddb.converter.ModelConfigurationConverter;
 import com.pikit.shared.dao.ddb.converter.ModelPerformanceConverter;
+import com.pikit.shared.enums.League;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import lombok.*;
@@ -25,6 +26,7 @@ public class DDBModel {
     private static final String TOP_3_GAMES_ATTRIBUTE = "top3Games";
     private static final String MODEL_STATUS_ATTRIBUTE = "modelStatus";
     private static final String MODEL_WORKFLOW_EXECUTION_ATTRIBUTE = "modelWorkflowExecution";
+    private static final String LEAGUE_INDEX = "leagueIndex";
 
     private static final String USER_MODELS_INDEX = "userModelsIndex";
 
@@ -37,8 +39,11 @@ public class DDBModel {
     private String userCreatedBy;
 
     @Getter(onMethod_ = {
-            @DynamoDbAttribute(CREATION_TIMESTAMP_ATTRIBUTE),
-            @DynamoDbSecondarySortKey(indexNames = USER_MODELS_INDEX)})
+            @DynamoDbAttribute(LEAGUE_ATTRIBUTE),
+            @DynamoDbSecondaryPartitionKey(indexNames = LEAGUE_INDEX)
+        })
+    private League league;
+
     private Long creationTimestamp;
 
     @Getter(onMethod_ = {
@@ -59,4 +64,10 @@ public class DDBModel {
 
     @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_WORKFLOW_EXECUTION_ATTRIBUTE)})
     private String modelWorkflowExecution;
+
+    @DynamoDbAttribute(CREATION_TIMESTAMP_ATTRIBUTE)
+    @DynamoDbSecondarySortKey(indexNames = {USER_MODELS_INDEX, LEAGUE_INDEX})
+    public Long getCreationTimestamp() {
+        return creationTimestamp;
+    }
 }

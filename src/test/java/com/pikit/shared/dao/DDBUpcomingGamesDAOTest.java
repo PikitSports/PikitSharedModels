@@ -69,7 +69,7 @@ public class DDBUpcomingGamesDAOTest {
 
     @Test
     public void addUpcomingGameForModel_successTest() throws PersistenceException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         DDBUpcomingGame upcomingGame = upcomingGamesTable.getItem(Key.builder()
                 .partitionValue(GAME_ID)
@@ -84,13 +84,13 @@ public class DDBUpcomingGamesDAOTest {
     @Test
     public void addUpcomingGameForModel_exceptionThrown() {
         doThrow(DynamoDbException.class).when(upcomingGamesTable).putItem(any(PutItemEnhancedRequest.class));
-        assertThatThrownBy(() -> upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel()))
+        assertThatThrownBy(() -> upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel()))
                 .isInstanceOf(PersistenceException.class);
     }
 
     @Test
     public void getUpcomingGamesForModel_successTest() throws PersistenceException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         List<UpcomingGameThatMeetsModel> upcomingGames = upcomingGamesDAO.getUpcomingGamesForModel(MODEL_ID);
         assertThat(upcomingGames.size()).isEqualTo(1);
@@ -99,7 +99,7 @@ public class DDBUpcomingGamesDAOTest {
 
     @Test
     public void getUpcomingGamesForModel_exceptionThrown() throws PersistenceException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         doThrow(DynamoDbException.class).when(modelIdIndex).query(any(QueryEnhancedRequest.class));
 
@@ -115,7 +115,7 @@ public class DDBUpcomingGamesDAOTest {
 
     @Test
     public void deleteUpcomingGameForModel_success() throws PersistenceException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         DDBUpcomingGame upcomingGame = upcomingGamesTable.getItem(Key.builder()
                 .partitionValue(GAME_ID)
@@ -136,7 +136,7 @@ public class DDBUpcomingGamesDAOTest {
 
     @Test
     public void deleteUpcomingGameForModel_exceptionThrown() throws PersistenceException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         DDBUpcomingGame upcomingGame = upcomingGamesTable.getItem(Key.builder()
                 .partitionValue(GAME_ID)
@@ -160,8 +160,8 @@ public class DDBUpcomingGamesDAOTest {
 
     @Test
     public void deleteAllUpcomingGamesForModel_successTest() throws PersistenceException, InterruptedException {
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
-        upcomingGamesDAO.addUpcomingGamesForModel(MODEL_ID, "gameId2", UpcomingGameThatMeetsModel.builder()
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        upcomingGamesDAO.addUpcomingGameForModel(MODEL_ID, "gameId2", UpcomingGameThatMeetsModel.builder()
                 .gameId("gameId2")
                 .build());
 
@@ -174,7 +174,7 @@ public class DDBUpcomingGamesDAOTest {
     public void deleteAllUpcomingGamesForModel_exceptionThrown() throws PersistenceException {
         DDBUpcomingGamesDAO mockedDAO = new DDBUpcomingGamesDAO(mockedEnhancedClient, upcomingGamesTable, modelIdIndex);
 
-        mockedDAO.addUpcomingGamesForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
+        mockedDAO.addUpcomingGameForModel(MODEL_ID, GAME_ID, getUpcomingGameThatMeetsModel());
 
         doThrow(DynamoDbException.class).when(mockedEnhancedClient).batchWriteItem(any(BatchWriteItemEnhancedRequest.class));
 

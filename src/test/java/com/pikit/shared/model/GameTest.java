@@ -28,4 +28,21 @@ public class GameTest {
         assertThat(game.s3GameId(League.NBA)).isEqualTo("202301020ATL");
         assertThat(game.s3GameId(League.MLB)).isEqualTo("ATL.ATL202301020");
     }
+
+    @Test
+    public void sportsReferenceTeamNameTest() {
+        String homeTeam = "CHC";
+        String awayTeam = "BAL";
+        String gameDate = "01/02/2023";
+        int numGameForDay = 0;
+
+        Game game = Game.fromGameAndBettingStats(GameStats.builder()
+                .homeTeam(homeTeam)
+                .awayTeam(awayTeam)
+                .gameDate(gameDate)
+                .numGameForDay(numGameForDay)
+                .build(), BettingStats.builder().build());
+
+        assertThat(game.s3GameId(League.MLB)).isEqualTo("CHN.CHN202301020");
+    }
 }

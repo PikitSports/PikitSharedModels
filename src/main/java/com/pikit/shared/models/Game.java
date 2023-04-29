@@ -1,5 +1,6 @@
 package com.pikit.shared.models;
 
+import com.pikit.shared.datasource.SportsReferenceConstants;
 import com.pikit.shared.enums.League;
 import lombok.*;
 
@@ -47,13 +48,14 @@ public class Game {
     }
 
     public String s3GameId(League league) {
+        String sportsReferenceTeamName = SportsReferenceConstants.getSportsReferenceTeamName(league, homeTeam());
         switch(league) {
             case MLB:
-                return String.format(SPORTS_REFERENCE_MLB_GAME_FORMAT, homeTeam(), homeTeam(), sportsReferenceGameDate(), numGameForDay());
+                return String.format(SPORTS_REFERENCE_MLB_GAME_FORMAT, sportsReferenceTeamName, sportsReferenceTeamName, sportsReferenceGameDate(), numGameForDay());
             case NBA:
-                return String.format(SPORTS_REFERENCE_NBA_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), homeTeam());
+                return String.format(SPORTS_REFERENCE_NBA_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), sportsReferenceTeamName);
             case NFL:
-                return String.format(SPORTS_REFERENCE_NFL_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), homeTeam().toLowerCase());
+                return String.format(SPORTS_REFERENCE_NFL_GAME_FORMAT, sportsReferenceGameDate(), numGameForDay(), sportsReferenceTeamName.toLowerCase());
             default:
                 throw new RuntimeException("Invalid league");
         }
