@@ -4,14 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pikit.shared.client.S3Client;
 import com.pikit.shared.dao.*;
-import com.pikit.shared.dao.ddb.DDBModelDAO;
-import com.pikit.shared.dao.ddb.DDBModelFollowersDAO;
-import com.pikit.shared.dao.ddb.DDBModelSubscribersDAO;
-import com.pikit.shared.dao.ddb.DDBUpcomingGamesDAO;
-import com.pikit.shared.dao.ddb.model.DDBModel;
-import com.pikit.shared.dao.ddb.model.DDBModelFollowers;
-import com.pikit.shared.dao.ddb.model.DDBModelSubscribers;
-import com.pikit.shared.dao.ddb.model.DDBUpcomingGame;
+import com.pikit.shared.dao.ddb.*;
+import com.pikit.shared.dao.ddb.model.*;
 import com.pikit.shared.dao.s3.S3DataSourceDAO;
 import com.pikit.shared.dao.s3.S3GamesThatMeetModelDAO;
 import dagger.Module;
@@ -34,6 +28,7 @@ public class DAOModule {
     private static final String MODEL_SUBSCRIBERS_TABLE_NAME = "ModelSubscribers";
     private static final String MODEL_FOLLOWERS_TABLE_NAME = "ModelFollowers";
     private static final String USER_ID_INDEX = "userIdIndex";
+    private static final String USERS_TABLE_NAME = "Users";
 
     @Provides
     @Reusable
@@ -89,5 +84,12 @@ public class DAOModule {
         DynamoDbIndex<DDBModelFollowers> userIdIndex = modelFollowersTable.index(USER_ID_INDEX);
 
         return new DDBModelFollowersDAO(modelFollowersTable, userIdIndex);
+    }
+
+    @Provides
+    @Reusable
+    static UserDAO userDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbTable<DDBUser> userTable = dynamoDbEnhancedClient.table(USERS_TABLE_NAME, TableSchema.fromBean(DDBUser.class));
+        return new DDBUserDAO(userTable);
     }
 }
