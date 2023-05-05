@@ -19,7 +19,7 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 @Module
 public class DAOModule {
     private static final String MODELS_TABLE_NAME = "Models";
-    private static final String UPCOMING_GAMES_TABLE_NAME = "UpcomingGamesForModel";
+    private static final String UPCOMING_GAMES_TABLE_NAME = "UpcomingGamesThatMeetModel";
     private static final String MODEL_ID_INDEX = "modelIdIndex";
     private static final String USER_MODELS_INDEX = "userModelsIndex";
     private static final String LEAGUE_INDEX = "leagueIndex";
