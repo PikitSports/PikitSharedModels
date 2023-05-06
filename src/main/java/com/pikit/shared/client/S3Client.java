@@ -92,7 +92,7 @@ public class S3Client {
         keysInPath.forEach(key -> deleteObjectFromS3(bucketName, key));
     }
 
-    private List<String> getListOfKeysFromS3Path(String bucketName, String path) {
+    public List<String> getListOfKeysFromS3Path(String bucketName, String path) {
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
                 .withBucketName(bucketName)
                 .withPrefix(path);
