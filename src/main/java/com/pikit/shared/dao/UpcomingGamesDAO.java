@@ -38,4 +38,11 @@ public interface UpcomingGamesDAO {
      * @throws PersistenceException
      */
     void deleteAllUpcomingGamesForModel(String modelId) throws PersistenceException;
+
+    /**
+     * Clear the entire table of upcoming games. This is used when daily job runs and we want to make sure the table is
+     * a clean slate for the scheduled games for the day ahead.
+     * @throws PersistenceException
+     */
+    void clearUpcomingGames() throws PersistenceException;
 }

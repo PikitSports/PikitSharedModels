@@ -17,7 +17,9 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.Projection;
 import software.amazon.awssdk.services.dynamodb.model.ProjectionType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.spy;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +37,7 @@ public class DDBUpcomingGamesDAOTest {
     private DynamoDbIndex<DDBUpcomingGame> modelIdIndex;
     private DDBUpcomingGamesDAO upcomingGamesDAO;
 
-    @Mock
+    //@Mock
     private DynamoDbEnhancedClient mockedEnhancedClient;
 
     @BeforeEach
@@ -48,6 +50,10 @@ public class DDBUpcomingGamesDAOTest {
         enhancedClient = DynamoDbEnhancedClient.builder()
                 .dynamoDbClient(localDynamoClient)
                 .build();
+
+        mockedEnhancedClient = spy(DynamoDbEnhancedClient.builder()
+                .dynamoDbClient(localDynamoClient)
+                .build());
 
         upcomingGamesTable = spy(enhancedClient.table("UpcomingGames", upcomingGameTableSchema));
 
@@ -180,6 +186,88 @@ public class DDBUpcomingGamesDAOTest {
 
         assertThatThrownBy(() -> mockedDAO.deleteAllUpcomingGamesForModel(MODEL_ID))
                 .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void clearUpcomingGames_successTest() throws PersistenceException {
+        String modelId = "model";
+
+        //Add 50 games to table
+        for (int i = 0; i < 50; i ++) {
+            String modelToAdd = modelId + i;
+            upcomingGamesDAO.addUpcomingGameForModel(modelToAdd, GAME_ID, getUpcomingGameThatMeetsModel());
+        }
+
+        List<DDBUpcomingGame> upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+        assertThat(upcomingGames.size()).isEqualTo(50);
+
+        upcomingGamesDAO.clearUpcomingGames();
+
+        upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+        assertThat(upcomingGames.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void clearUpcomingGames_exceptionThrownScanning() {
+        DDBUpcomingGamesDAO mockedDAO = new DDBUpcomingGamesDAO(mockedEnhancedClient, upcomingGamesTable, modelIdIndex);
+        doThrow(DynamoDbException.class).when(upcomingGamesTable).scan(any(ScanEnhancedRequest.class));
+
+        assertThatThrownBy(() -> mockedDAO.clearUpcomingGames())
+                .isInstanceOf(PersistenceException.class);
+    }
+
+//    @Test
+//    public void clearUpcomingGames_exceptionThrownBathWriting() throws PersistenceException {
+//        DDBUpcomingGamesDAO mockedDAO = new DDBUpcomingGamesDAO(mockedEnhancedClient, upcomingGamesTable, modelIdIndex);
+//        String modelId = "model";
+//
+//        //Add 50 games to table
+//        for (int i = 0; i < 50; i ++) {
+//            String modelToAdd = modelId + i;
+//            mockedDAO.addUpcomingGameForModel(modelToAdd, GAME_ID, getUpcomingGameThatMeetsModel());
+//        }
+//
+//        List<DDBUpcomingGame> upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+//        assertThat(upcomingGames.size()).isEqualTo(50);
+//
+//        doCallRealMethod()
+//                //.doThrow(DynamoDbException.class)
+//                .when(mockedEnhancedClient).batchWriteItem(any(BatchWriteItemEnhancedRequest.class));
+////        doReturn(BatchWriteResult.builder()
+////                .unprocessedRequests(new HashMap<>())
+////                .build()).when(mockedEnhancedClient).batchWriteItem(any(BatchWriteItemEnhancedRequest.class));
+////        when(mockedEnhancedClient.batchWriteItem(any(BatchWriteItemEnhancedRequest.class)))
+////                .thenReturn(BatchWriteResult.builder().build())
+////                .thenThrow(DynamoDbException.class);
+//        mockedDAO.clearUpcomingGames();
+//
+//        upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+//        assertThat(upcomingGames.size()).isEqualTo(25);
+//    }
+
+    @Test
+    public void clearUpcomingGames_exceptionThrownBathWriting() throws PersistenceException {
+        DDBUpcomingGamesDAO mockedDAO = new DDBUpcomingGamesDAO(mockedEnhancedClient, upcomingGamesTable, modelIdIndex);
+        String modelId = "model";
+
+        //Add 50 games to table
+        for (int i = 0; i < 50; i ++) {
+            String modelToAdd = modelId + i;
+            mockedDAO.addUpcomingGameForModel(modelToAdd, GAME_ID, getUpcomingGameThatMeetsModel());
+        }
+
+        List<DDBUpcomingGame> upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+        assertThat(upcomingGames.size()).isEqualTo(50);
+
+        doCallRealMethod()
+                .doThrow(DynamoDbException.class)
+                .when(mockedEnhancedClient).batchWriteItem(any(BatchWriteItemEnhancedRequest.class));
+
+        assertThatThrownBy(() -> mockedDAO.clearUpcomingGames())
+                .isInstanceOf(PersistenceException.class);
+
+        upcomingGames = upcomingGamesTable.scan().items().stream().collect(Collectors.toList());
+        assertThat(upcomingGames.size()).isEqualTo(25);
     }
 
     private UpcomingGameThatMeetsModel getUpcomingGameThatMeetsModel() {
