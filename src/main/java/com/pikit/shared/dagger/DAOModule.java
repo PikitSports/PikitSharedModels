@@ -29,6 +29,7 @@ public class DAOModule {
     private static final String MODEL_FOLLOWERS_TABLE_NAME = "ModelFollowers";
     private static final String USER_ID_INDEX = "userIdIndex";
     private static final String USERS_TABLE_NAME = "Users";
+    private static final String GAMES_TABLE_NAME = "Games";
 
     @Provides
     @Reusable
@@ -91,5 +92,12 @@ public class DAOModule {
     static UserDAO userDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         DynamoDbTable<DDBUser> userTable = dynamoDbEnhancedClient.table(USERS_TABLE_NAME, TableSchema.fromBean(DDBUser.class));
         return new DDBUserDAO(userTable);
+    }
+
+    @Provides
+    @Reusable
+    static GamesDAO gamesDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbTable<DDBGame> gamesTable = dynamoDbEnhancedClient.table(GAMES_TABLE_NAME, TableSchema.fromBean(DDBGame.class));
+        return new DDBGamesDAO(gamesTable);
     }
 }
