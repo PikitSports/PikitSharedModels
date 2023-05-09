@@ -168,14 +168,59 @@ public class Game {
         return Double.parseDouble(value);
     }
 
+    private Map<String, String> teamBoxScore(League league, Map<String, String> teamStats) {
+        Map<String, String> boxScore = new HashMap<>();
+        switch (league) {
+            case NFL:
+            case NBA:
+                boxScore.put("Q1", teamStats.get("Q1"));
+                boxScore.put("Q2", teamStats.get("Q2"));
+                boxScore.put("Q3", teamStats.get("Q3"));
+                boxScore.put("Q4", teamStats.get("Q4"));
+                boxScore.put("OT", teamStats.get("OT"));
+                boxScore.put("Final", teamStats.get("Final"));
+                break;
+            case MLB:
+                boxScore.put("I1", teamStats.get("I1"));
+                boxScore.put("I2", teamStats.get("I2"));
+                boxScore.put("I3", teamStats.get("I3"));
+                boxScore.put("I4", teamStats.get("I4"));
+                boxScore.put("I5", teamStats.get("I5"));
+                boxScore.put("I6", teamStats.get("I6"));
+                boxScore.put("I7", teamStats.get("I7"));
+                boxScore.put("I8", teamStats.get("I8"));
+                boxScore.put("I9", teamStats.get("I9"));
+                boxScore.put("I10+", teamStats.get("I10+"));
+                boxScore.put("Final", teamStats.get("Final"));
+                break;
+            default:
+                throw new RuntimeException("Invalid league: " + league);
+        }
+
+        return boxScore;
+    }
+
     public DDBGame toDDBGame(League league) {
+        Map<String, String> ddbGameStats = new HashMap<>();
+        ddbGameStats.put(HOME_TEAM, homeTeam());
+        ddbGameStats.put(AWAY_TEAM, awayTeam());
+        ddbGameStats.put(GAME_DATE, gameDate());
+        ddbGameStats.put(NUM_GAME_FOR_DAY, numGameForDay());
+
+        Map<String, String> ddbBettingStats = new HashMap<>();
+        ddbBettingStats.put(HOME_TEAM_SPREAD, bettingStats.get(HOME_TEAM_SPREAD));
+        ddbBettingStats.put(AWAY_TEAM_SPREAD, bettingStats.get(AWAY_TEAM_SPREAD));
+        ddbBettingStats.put(HOME_TEAM_MONEY_LINE, bettingStats.get(HOME_TEAM_MONEY_LINE));
+        ddbBettingStats.put(AWAY_TEAM_MONEY_LINE, bettingStats.get(AWAY_TEAM_MONEY_LINE));
+        ddbBettingStats.put(OVER_UNDER, bettingStats.get(OVER_UNDER));
+
         return DDBGame.builder()
                 .gameId(gameId())
                 .league(league)
-                .gameStats(gameStats)
-                .bettingStats(bettingStats)
-                .homeTeamStats(homeTeamStats)
-                .awayTeamStats(awayTeamStats)
+                .gameStats(ddbGameStats)
+                .bettingStats(ddbBettingStats)
+                .homeTeamStats(teamBoxScore(league, homeTeamStats))
+                .awayTeamStats(teamBoxScore(league, awayTeamStats))
                 .build();
     }
 }
