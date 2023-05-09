@@ -115,9 +115,8 @@ public class DDBUpcomingGamesDAO implements UpcomingGamesDAO {
             ScanEnhancedRequest scanRequest = ScanEnhancedRequest.builder()
                     .attributesToProject("gameId", "modelId")
                     .build();
-            List<DDBUpcomingGame> upcomingGames = upcomingGamesTable.scan(scanRequest)
-                    .items()
-                    .stream()
+            List<DDBUpcomingGame> upcomingGames = upcomingGamesTable.scan(scanRequest).stream()
+                    .flatMap(page -> page.items().stream())
                     .collect(Collectors.toList());
 
             // Delete items in batches
