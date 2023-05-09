@@ -1,5 +1,6 @@
 package com.pikit.shared.models;
 
+import com.pikit.shared.dao.ddb.model.DDBGame;
 import com.pikit.shared.datasource.SportsReferenceConstants;
 import com.pikit.shared.enums.League;
 import lombok.*;
@@ -165,5 +166,16 @@ public class Game {
         }
 
         return Double.parseDouble(value);
+    }
+
+    public DDBGame toDDBGame(League league) {
+        return DDBGame.builder()
+                .gameId(gameId())
+                .league(league)
+                .gameStats(gameStats)
+                .bettingStats(bettingStats)
+                .homeTeamStats(homeTeamStats)
+                .awayTeamStats(awayTeamStats)
+                .build();
     }
 }
