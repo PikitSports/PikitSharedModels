@@ -117,6 +117,22 @@ public class Game {
         return getSanitizedDouble(awayTeamStats.get(FINAL));
     }
 
+    public void addGameStat(String key, String value) {
+        gameStats.put(key, value);
+    }
+
+    public void addBettingStat(String key, String value) {
+        bettingStats.put(key, value);
+    }
+
+    public void addHomeTeamStat(String key, String value) {
+        homeTeamStats.put(key, value);
+    }
+
+    public void addAwayTeamStat(String key, String value) {
+        awayTeamStats.put(key, value);
+    }
+
     public void mergeGame(Game gameToMerge) {
         gameStats.putAll(gameToMerge.getGameStats());
         bettingStats.putAll(gameToMerge.getBettingStats());
@@ -222,5 +238,42 @@ public class Game {
                 .homeTeamStats(teamBoxScore(league, homeTeamStats))
                 .awayTeamStats(teamBoxScore(league, awayTeamStats))
                 .build();
+    }
+
+    public Game toLightWeightGame(List<String> fieldsToReturn) {
+        GameStats newGameStats = GameStats.builder()
+                .homeTeam(homeTeam())
+                .awayTeam(awayTeam())
+                .gameDate(gameDate())
+                .numGameForDay(Integer.parseInt(numGameForDay()))
+                .build();
+
+        BettingStats newBettingStats = BettingStats.builder()
+                .homeTeamSpread(bettingStats.get(HOME_TEAM_SPREAD))
+                .awayTeamSpread(bettingStats.get(AWAY_TEAM_SPREAD))
+                .homeTeamMoneyLine(bettingStats.get(HOME_TEAM_MONEY_LINE))
+                .awayTeamMoneyLine(bettingStats.get(AWAY_TEAM_MONEY_LINE))
+                .overUnder(bettingStats.get(OVER_UNDER))
+                .build();
+
+        Game lightWeightGame = Game.fromGameAndBettingStats(newGameStats, newBettingStats);
+
+        List<String> ignoreList = List.of(HOME_TEAM, AWAY_TEAM, NUM_GAME_FOR_DAY, GAME_DATE, HOME_TEAM_MONEY_LINE, AWAY_TEAM_MONEY_LINE, HOME_TEAM_SPREAD, AWAY_TEAM_SPREAD, OVER_UNDER);
+
+        for (String fieldToReturn: fieldsToReturn) {
+            if (ignoreList.contains(fieldToReturn)) {
+                continue;
+            }
+            if (gameStats.containsKey(fieldToReturn)) {
+                lightWeightGame.addGameStat(fieldToReturn, gameStats.get(fieldToReturn));
+            } else if (bettingStats.containsKey(fieldToReturn)) {
+                lightWeightGame.addBettingStat(fieldToReturn, bettingStats.get(fieldToReturn));
+            } else {
+                lightWeightGame.addHomeTeamStat(fieldToReturn, homeTeamStats.get(fieldToReturn));
+                lightWeightGame.addAwayTeamStat(fieldToReturn, awayTeamStats.get(fieldToReturn));
+            }
+        }
+
+        return lightWeightGame;
     }
 }
