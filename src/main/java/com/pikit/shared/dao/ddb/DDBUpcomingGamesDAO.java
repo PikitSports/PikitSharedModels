@@ -139,6 +139,10 @@ public class DDBUpcomingGamesDAO implements UpcomingGamesDAO {
                     batchSize = 0;
                 }
             }
+
+            if (deleteRequests.size() > 0) {
+                deleteBatchItems(deleteRequests);
+            }
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown clearing upcoming games table", e);
             throw new PersistenceException("Failed to clear upcoming games table");
