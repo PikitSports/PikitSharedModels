@@ -30,6 +30,9 @@ public class DAOModule {
     private static final String USER_ID_INDEX = "userIdIndex";
     private static final String USERS_TABLE_NAME = "Users";
     private static final String GAMES_TABLE_NAME = "Games";
+    private static final String LAST_10_GAMES_INDEX_NAME = "last10GamesIndex";
+    private static final String LAST_50_GAMES_INDEX_NAME = "last50GamesIndex";
+    private static final String LAST_100_GAMES_INDEX_NAME = "last100GamesIndex";
 
     @Provides
     @Reusable
@@ -43,7 +46,11 @@ public class DAOModule {
         DynamoDbTable<DDBModel> modelsTable = dynamoDbEnhancedClient.table(MODELS_TABLE_NAME, TableSchema.fromBean(DDBModel.class));
         DynamoDbIndex<DDBModel> userModelsIndex = modelsTable.index(USER_MODELS_INDEX);
         DynamoDbIndex<DDBModel> leagueModelsIndex = modelsTable.index(LEAGUE_INDEX);
-        return new DDBModelDAO(modelsTable, userModelsIndex, leagueModelsIndex);
+        DynamoDbIndex<DDBModel> last10GamesIndex = modelsTable.index(LAST_10_GAMES_INDEX_NAME);
+        DynamoDbIndex<DDBModel> last50GamesIndex = modelsTable.index(LAST_50_GAMES_INDEX_NAME);
+        DynamoDbIndex<DDBModel> last100GamesIndex = modelsTable.index(LAST_100_GAMES_INDEX_NAME);
+
+        return new DDBModelDAO(modelsTable, userModelsIndex, leagueModelsIndex, last10GamesIndex, last50GamesIndex, last100GamesIndex);
     }
 
     @Provides

@@ -8,6 +8,7 @@ import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import com.pikit.shared.dao.ddb.model.DDBModel;
+import com.pikit.shared.models.ModelProfitabilityStats;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -28,13 +29,22 @@ public class DDBModelDAO implements ModelDAO {
     private final DynamoDbTable<DDBModel> modelsTable;
     private final DynamoDbIndex<DDBModel> userModelsIndex;
     private final DynamoDbIndex<DDBModel> leagueIndex;
+    private final DynamoDbIndex<DDBModel> last10GamesIndex;
+    private final DynamoDbIndex<DDBModel> last50GamesIndex;
+    private final DynamoDbIndex<DDBModel> last100GamesIndex;
 
     public DDBModelDAO(DynamoDbTable<DDBModel> modelsTable,
                        DynamoDbIndex<DDBModel> userModelsIndex,
-                       DynamoDbIndex<DDBModel> leagueIndex) {
+                       DynamoDbIndex<DDBModel> leagueIndex,
+                       DynamoDbIndex<DDBModel> last10GamesIndex,
+                       DynamoDbIndex<DDBModel> last50GamesIndex,
+                       DynamoDbIndex<DDBModel> last100GamesIndex) {
         this.modelsTable = modelsTable;
         this.userModelsIndex = userModelsIndex;
         this.leagueIndex = leagueIndex;
+        this.last10GamesIndex = last10GamesIndex;
+        this.last50GamesIndex = last50GamesIndex;
+        this.last100GamesIndex = last100GamesIndex;
     }
 
     @Override
@@ -130,11 +140,15 @@ public class DDBModelDAO implements ModelDAO {
     }
 
     @Override
-    public void updateModelAfterModelRun(String modelId, ModelPerformance modelPerformance) throws PersistenceException, NotFoundException{
+    public void updateModelAfterModelRun(String modelId, ModelPerformance modelPerformance, ModelProfitabilityStats modelProfitabilityStats)
+            throws PersistenceException, NotFoundException{
         try {
             DDBModel modelToUpdate = DDBModel.builder()
                     .modelId(modelId)
                     .modelPerformance(modelPerformance)
+                    .last10Games(modelProfitabilityStats.getLast10Games())
+                    .last50Games(modelProfitabilityStats.getLast50Games())
+                    .last100Games(modelProfitabilityStats.getLast100Games())
                     .build();
 
             UpdateItemEnhancedRequest<DDBModel> request = UpdateItemEnhancedRequest.builder(DDBModel.class)
@@ -236,6 +250,66 @@ public class DDBModelDAO implements ModelDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown retrieving models for league {}", league, e);
             throw new PersistenceException("Failed to get models for league");
+        }
+    }
+
+    @Override
+    public List<DDBModel> getTopModelsFromLast10Games(League league, int pageSize) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(league.toString())
+                            .build()))
+                    .build();
+
+            return last10GamesIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDb] Exception thrown getting top models from last 10 games for {}", league, e);
+            throw new PersistenceException("Failed to get top models from last 10 games");
+        }
+    }
+
+    @Override
+    public List<DDBModel> getTopModelsFromLast50Games(League league, int pageSize) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(league.toString())
+                            .build()))
+                    .build();
+
+            return last50GamesIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDb] Exception thrown getting top models from last 50 games for {}", league, e);
+            throw new PersistenceException("Failed to get top models from last 50 games");
+        }
+    }
+
+    @Override
+    public List<DDBModel> getTopModelsFromLast100Games(League league, int pageSize) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(league.toString())
+                            .build()))
+                    .build();
+
+            return last100GamesIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDb] Exception thrown getting top models from last 100 games for {}", league, e);
+            throw new PersistenceException("Failed to get top models from last 100 games");
         }
     }
 

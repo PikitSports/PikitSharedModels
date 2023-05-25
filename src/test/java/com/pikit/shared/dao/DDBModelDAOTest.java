@@ -9,6 +9,7 @@ import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
+import com.pikit.shared.models.ModelProfitabilityStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.enhanced.dynamodb.*;
@@ -29,10 +30,16 @@ public class DDBModelDAOTest {
     private static final String EXECUTION = "execution";
     private static final String MODEL = "model";
     private static final String USER = "USER";
+    private static final Double LAST_10 = 55.0;
+    private static final Double LAST_50 = 50.0;
+    private static final Double LAST_100 = 60.0;
     private LocalDynamoDB localDynamoDB = new LocalDynamoDB();
     private DynamoDbTable<DDBModel> modelsTable;
     private DynamoDbIndex<DDBModel> userModelsIndex;
     private DynamoDbIndex<DDBModel> leagueModelsIndex;
+    private DynamoDbIndex<DDBModel> last10GamesModelsIndex;
+    private DynamoDbIndex<DDBModel> last50GamesModelsIndex;
+    private DynamoDbIndex<DDBModel> last100GamesModelsIndex;
     private DDBModelDAO modelDAO;
 
     @BeforeEach
@@ -62,14 +69,38 @@ public class DDBModelDAOTest {
                         .build())
                 .build();
 
+        EnhancedGlobalSecondaryIndex last10GamesIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("last10GamesIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
+
+        EnhancedGlobalSecondaryIndex last50GamesIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("last50GamesIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
+
+        EnhancedGlobalSecondaryIndex last100GamesIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("last100GamesIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
+
         modelsTable.createTable(CreateTableEnhancedRequest.builder()
-                .globalSecondaryIndices(userIndex, leagueIndex)
+                .globalSecondaryIndices(userIndex, leagueIndex, last10GamesIndex, last50GamesIndex, last100GamesIndex)
                 .build());
 
         userModelsIndex = spy(modelsTable.index("userModelsIndex"));
         leagueModelsIndex = spy(modelsTable.index("leagueIndex"));
+        last10GamesModelsIndex = spy(modelsTable.index("last10GamesIndex"));
+        last50GamesModelsIndex = spy(modelsTable.index("last50GamesIndex"));
+        last100GamesModelsIndex = spy(modelsTable.index("last100GamesIndex"));
 
-        modelDAO = new DDBModelDAO(modelsTable, userModelsIndex, leagueModelsIndex);
+        modelDAO = new DDBModelDAO(modelsTable, userModelsIndex, leagueModelsIndex, last10GamesModelsIndex, last50GamesModelsIndex, last100GamesModelsIndex);
     }
 
     @Test
@@ -216,7 +247,7 @@ public class DDBModelDAOTest {
 
         assertThat(currentModel.getModelPerformance()).isNull();
 
-        modelDAO.updateModelAfterModelRun(modelId, ModelPerformance.builder().build());
+        modelDAO.updateModelAfterModelRun(modelId, ModelPerformance.builder().build(), getModelProfitabilityStats());
 
         DDBModel newModel = modelsTable.getItem(Key.builder()
                 .partitionValue(modelId)
@@ -224,11 +255,16 @@ public class DDBModelDAOTest {
 
         assertThat(newModel.getModelPerformance()).isNotNull();
         assertThat(newModel.getModelConfiguration().getLeague()).isEqualTo(League.NFL);
+        assertThat(newModel.getLast10Games()).isEqualTo(LAST_10);
+        assertThat(newModel.getLast50Games()).isEqualTo(LAST_50);
+        assertThat(newModel.getLast100Games()).isEqualTo(LAST_100);
     }
 
     @Test
     public void updateModelAfterRun_notExists() {
-        assertThatThrownBy(() -> modelDAO.updateModelAfterModelRun("unknownModel", ModelPerformance.builder().build()))
+        assertThatThrownBy(() -> modelDAO.updateModelAfterModelRun("unknownModel",
+                ModelPerformance.builder().build(),
+                getModelProfitabilityStats()))
                 .isInstanceOf(NotFoundException.class);
     }
 
@@ -240,7 +276,9 @@ public class DDBModelDAOTest {
 
         doThrow(DynamoDbException.class).when(modelsTable).updateItem(any(UpdateItemEnhancedRequest.class));
 
-        assertThatThrownBy(() -> modelDAO.updateModelAfterModelRun(modelId, ModelPerformance.builder().build()))
+        assertThatThrownBy(() -> modelDAO.updateModelAfterModelRun(modelId,
+                ModelPerformance.builder().build(),
+                getModelProfitabilityStats()))
                 .isInstanceOf(PersistenceException.class);
     }
 
@@ -383,5 +421,13 @@ public class DDBModelDAOTest {
 
         assertThatThrownBy(() -> modelDAO.getModelsForLeague(League.NFL))
                 .isInstanceOf(PersistenceException.class);
+    }
+
+    private ModelProfitabilityStats getModelProfitabilityStats() {
+        return ModelProfitabilityStats.builder()
+                .last10Games(LAST_10)
+                .last50Games(LAST_50)
+                .last100Games(LAST_100)
+                .build();
     }
 }

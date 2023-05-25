@@ -26,7 +26,15 @@ public class DDBModel {
     private static final String TOP_3_GAMES_ATTRIBUTE = "top3Games";
     private static final String MODEL_STATUS_ATTRIBUTE = "modelStatus";
     private static final String MODEL_WORKFLOW_EXECUTION_ATTRIBUTE = "modelWorkflowExecution";
+    private static final String LAST_10_GAMES_ATTRIBUTE = "last10Games";
+    private static final String LAST_50_GAMES_ATTRIBUTE = "last50Games";
+    private static final String LAST_100_GAMES_ATTRIBUTE = "last100Games";
+
+    //Indexes
     private static final String LEAGUE_INDEX = "leagueIndex";
+    private static final String LAST_10_GAMES_INDEX = "last10GamesIndex";
+    private static final String LAST_50_GAMES_INDEX = "last50GamesIndex";
+    private static final String LAST_100_GAMES_INDEX = "last100GamesIndex";
 
     private static final String USER_MODELS_INDEX = "userModelsIndex";
 
@@ -38,10 +46,6 @@ public class DDBModel {
             @DynamoDbSecondaryPartitionKey(indexNames = USER_MODELS_INDEX)})
     private String userCreatedBy;
 
-    @Getter(onMethod_ = {
-            @DynamoDbAttribute(LEAGUE_ATTRIBUTE),
-            @DynamoDbSecondaryPartitionKey(indexNames = LEAGUE_INDEX)
-        })
     private League league;
 
     private Long creationTimestamp;
@@ -64,6 +68,30 @@ public class DDBModel {
 
     @Getter(onMethod_ = {@DynamoDbAttribute(MODEL_WORKFLOW_EXECUTION_ATTRIBUTE)})
     private String modelWorkflowExecution;
+
+    @Getter(onMethod_ = {
+            @DynamoDbAttribute(LAST_10_GAMES_ATTRIBUTE),
+            @DynamoDbSecondarySortKey(indexNames = LAST_10_GAMES_INDEX)
+    })
+    private Double last10Games;
+
+    @Getter(onMethod_ = {
+            @DynamoDbAttribute(LAST_50_GAMES_ATTRIBUTE),
+            @DynamoDbSecondarySortKey(indexNames = LAST_50_GAMES_INDEX)
+    })
+    private Double last50Games;
+
+    @Getter(onMethod_ = {
+            @DynamoDbAttribute(LAST_100_GAMES_ATTRIBUTE),
+            @DynamoDbSecondarySortKey(indexNames = LAST_100_GAMES_INDEX)
+    })
+    private Double last100Games;
+
+    @DynamoDbAttribute(LEAGUE_ATTRIBUTE)
+    @DynamoDbSecondaryPartitionKey(indexNames = {LEAGUE_INDEX, LAST_10_GAMES_INDEX, LAST_50_GAMES_ATTRIBUTE, LAST_100_GAMES_INDEX})
+    public League getLeague() {
+        return league;
+    }
 
     @DynamoDbAttribute(CREATION_TIMESTAMP_ATTRIBUTE)
     @DynamoDbSecondarySortKey(indexNames = {USER_MODELS_INDEX, LEAGUE_INDEX})

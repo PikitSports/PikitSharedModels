@@ -7,6 +7,7 @@ import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import com.pikit.shared.dao.ddb.model.DDBModel;
+import com.pikit.shared.models.ModelProfitabilityStats;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +52,8 @@ public interface ModelDAO {
      * @param modelId ID of the model to update
      * @param modelPerformance Performance of the model
      */
-    void updateModelAfterModelRun(String modelId, ModelPerformance modelPerformance) throws PersistenceException, NotFoundException;
+    void updateModelAfterModelRun(String modelId, ModelPerformance modelPerformance, ModelProfitabilityStats modelProfitabilityStats)
+            throws PersistenceException, NotFoundException;
 
     /**
      * Given a modelId, delete the model. Note that this doesn't delete all data we store for the model. It just deletes it from the Models table.
@@ -84,4 +86,31 @@ public interface ModelDAO {
      * @throws PersistenceException when we are unable to retrieve models for league.
      */
     List<DDBModel> getModelsForLeague(League league) throws PersistenceException;
+
+    /**
+     * Given a league, retrieve the top {pageSize} models over last 10 games
+     * @param league League models are for
+     * @param pageSize how many models to return
+     * @return Top {pageSize} models over the last 10 games.
+     * @throws PersistenceException when we are unable to retrieve the top models.
+     */
+    List<DDBModel> getTopModelsFromLast10Games(League league, int pageSize) throws PersistenceException;
+
+    /**
+     * Given a league, retrieve the top {pageSize} models over last 50 games
+     * @param league League models are for
+     * @param pageSize how many models to return
+     * @return Top {pageSize} models over the last 50 games.
+     * @throws PersistenceException when we are unable to retrieve the top models.
+     */
+    List<DDBModel> getTopModelsFromLast50Games(League league, int pageSize) throws PersistenceException;
+
+    /**
+     * Given a league, retrieve the top {pageSize} models over last 100 games
+     * @param league League models are for
+     * @param pageSize how many models to return
+     * @return Top {pageSize} models over the last 100 games.
+     * @throws PersistenceException when we are unable to retrieve the top models.
+     */
+    List<DDBModel> getTopModelsFromLast100Games(League league, int pageSize) throws PersistenceException;
 }
