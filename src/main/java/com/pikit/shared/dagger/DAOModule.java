@@ -8,6 +8,7 @@ import com.pikit.shared.dao.ddb.*;
 import com.pikit.shared.dao.ddb.model.*;
 import com.pikit.shared.dao.s3.S3DataSourceDAO;
 import com.pikit.shared.dao.s3.S3GamesThatMeetModelDAO;
+import com.pikit.shared.dao.s3.S3TopModelsForLeagueDAO;
 import dagger.Module;
 import dagger.Provides;
 import dagger.Reusable;
@@ -106,5 +107,12 @@ public class DAOModule {
     static GamesDAO gamesDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         DynamoDbTable<DDBGame> gamesTable = dynamoDbEnhancedClient.table(GAMES_TABLE_NAME, TableSchema.fromBean(DDBGame.class));
         return new DDBGamesDAO(gamesTable);
+    }
+
+    @Provides
+    @Reusable
+    static TopModelsForLeagueDAO topModelsForLeagueDAO(S3Client s3Client) {
+        String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
+        return new S3TopModelsForLeagueDAO(s3Client, gamesBucketName);
     }
 }
