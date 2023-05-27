@@ -88,7 +88,7 @@ public class DDBModel {
     private Double last100Games;
 
     @DynamoDbAttribute(LEAGUE_ATTRIBUTE)
-    @DynamoDbSecondaryPartitionKey(indexNames = {LEAGUE_INDEX, LAST_10_GAMES_INDEX, LAST_50_GAMES_ATTRIBUTE, LAST_100_GAMES_INDEX})
+    @DynamoDbSecondaryPartitionKey(indexNames = {LEAGUE_INDEX, LAST_10_GAMES_INDEX, LAST_50_GAMES_INDEX, LAST_100_GAMES_INDEX})
     public League getLeague() {
         return league;
     }

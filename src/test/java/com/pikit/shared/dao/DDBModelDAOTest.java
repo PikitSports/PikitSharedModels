@@ -423,6 +423,23 @@ public class DDBModelDAOTest {
                 .isInstanceOf(PersistenceException.class);
     }
 
+    @Test
+    public void getTopModelsForLeague_successTest() throws PersistenceException, NotFoundException {
+        String modelId = modelDAO.createModel(USER, ModelConfiguration.builder()
+                .league(League.NFL)
+                .build());
+
+        modelDAO.updateModelAfterModelRun(modelId, ModelPerformance.builder().build(), getModelProfitabilityStats());
+
+        List<DDBModel> top10Models = modelDAO.getTopModelsFromLast10Games(League.NFL, 100);
+        List<DDBModel> top50Models = modelDAO.getTopModelsFromLast50Games(League.NFL, 100);
+        List<DDBModel> top100Models = modelDAO.getTopModelsFromLast100Games(League.NFL, 100);
+
+        assertThat(top10Models.size()).isEqualTo(1);
+        assertThat(top50Models.size()).isEqualTo(1);
+        assertThat(top100Models.size()).isEqualTo(1);
+    }
+
     private ModelProfitabilityStats getModelProfitabilityStats() {
         return ModelProfitabilityStats.builder()
                 .last10Games(LAST_10)
