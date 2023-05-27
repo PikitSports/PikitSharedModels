@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 public class S3TopModelsForLeagueDAO implements TopModelsForLeagueDAO {
-    private static final String TOP_MODELS_FOR_LEAGUE_PATH = "%s/%s.json";
+    private static final String TOP_MODELS_FOR_LEAGUE_PATH = "%s/topModelsForLeague/%s.json";
     //Temporary cache for lambda. This will help during the 15 minutes of execution time of the lambda so we don't have to call S3 for every request.
     //Especially since the data will only change once per day.
     private static final HashMap<String, List<DDBModel>> cachedTopModels = new HashMap<>();
