@@ -3,6 +3,7 @@ package com.pikit.shared.dao.ddb.model;
 import com.pikit.shared.dao.ddb.converter.MapAttributeConverter;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.models.Game;
+import com.pikit.shared.models.GameStats;
 import lombok.*;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
@@ -22,6 +23,8 @@ public class DDBGame {
     private static final String BETTING_STATS_ATTRIBUTE = "bettingStats";
     private static final String HOME_TEAM_STATS_ATTRIBUTE = "homeTeamStats";
     private static final String AWAY_TEAM_STATS_ATTRIBUTE = "awayTeamStats";
+    private static final String GAME_STATUS_ATTRIBUTE = "gameStatus";
+    private static final String GAME_STATUS_INDEX = "gameStatusIndex";
 
     @Getter(onMethod_ = {
             @DynamoDbAttribute(GAME_ID_ATTRIBUTE),
@@ -31,7 +34,8 @@ public class DDBGame {
 
     @Getter(onMethod_ = {
             @DynamoDbAttribute(LEAGUE_ATTRIBUTE),
-            @DynamoDbSortKey
+            @DynamoDbSortKey,
+            @DynamoDbSecondaryPartitionKey(indexNames = GAME_STATUS_INDEX)
     })
     private League league;
 
@@ -59,12 +63,19 @@ public class DDBGame {
     })
     private Map<String, String> awayTeamStats;
 
+    @Getter(onMethod_ = {
+            @DynamoDbAttribute(GAME_STATUS_ATTRIBUTE),
+            @DynamoDbSecondarySortKey(indexNames = GAME_STATUS_INDEX)
+    })
+    private GameStatus gameStatus;
+
     public Game toGame() {
         return Game.builder()
                 .gameStats(gameStats)
                 .bettingStats(bettingStats)
                 .homeTeamStats(homeTeamStats)
                 .awayTeamStats(awayTeamStats)
+                .gameStatus(gameStatus)
                 .build();
     }
 }

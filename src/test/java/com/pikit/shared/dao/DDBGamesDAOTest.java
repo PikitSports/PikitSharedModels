@@ -2,6 +2,8 @@ package com.pikit.shared.dao;
 
 import com.pikit.shared.dao.ddb.DDBGamesDAO;
 import com.pikit.shared.dao.ddb.model.DDBGame;
+import com.pikit.shared.dao.ddb.model.DDBModel;
+import com.pikit.shared.dao.ddb.model.GameStatus;
 import com.pikit.shared.dynamodb.LocalDynamoDB;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.PersistenceException;
@@ -10,15 +12,17 @@ import com.pikit.shared.models.Game;
 import com.pikit.shared.models.GameStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
-import software.amazon.awssdk.enhanced.dynamodb.Key;
-import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.enhanced.dynamodb.model.CreateTableEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.EnhancedGlobalSecondaryIndex;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.Projection;
+import software.amazon.awssdk.services.dynamodb.model.ProjectionType;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.spy;
@@ -30,12 +34,14 @@ import static org.mockito.Mockito.*;
 public class DDBGamesDAOTest {
     private static final String HOME_TEAM = "team1";
     private static final String AWAY_TEAM = "team2";
+    private static final String TEAM_3 = "team3";
     private static final int NUM_GAME_FOR_DAY = 0;
     private static final String GAME_DATE = "01/02/2023";
     private static final String EXPECTED_GAME_ID = "team1|team2|01/02/2023|0";
     private LocalDynamoDB localDynamoDB = new LocalDynamoDB();
     private DynamoDbTable<DDBGame> gamesTable;
     private DDBGamesDAO gamesDAO;
+    private DynamoDbIndex<DDBGame> gameStatusTableIndex;
 
     @BeforeEach
     public void setup() {
@@ -50,9 +56,20 @@ public class DDBGamesDAOTest {
 
         gamesTable = spy(enhancedClient.table("Games", gameTableSchema));
 
-        gamesTable.createTable(CreateTableEnhancedRequest.builder().build());
+        EnhancedGlobalSecondaryIndex gameStatusIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("gameStatusIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
 
-        gamesDAO = new DDBGamesDAO(gamesTable);
+        gamesTable.createTable(CreateTableEnhancedRequest.builder()
+                .globalSecondaryIndices(gameStatusIndex)
+                .build());
+
+        gameStatusTableIndex = spy(gamesTable.index("gameStatusIndex"));
+
+        gamesDAO = new DDBGamesDAO(gamesTable, gameStatusTableIndex);
     }
 
     @Test
@@ -102,6 +119,43 @@ public class DDBGamesDAOTest {
     public void getGameFromId_exceptionThrown() {
         doThrow(DynamoDbException.class).when(gamesTable).getItem(any(Key.class));
         assertThatThrownBy(() -> gamesDAO.getGameFromId(League.NFL, EXPECTED_GAME_ID))
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void getGamesFromLeagueAndStatus_successTest() throws PersistenceException {
+        Game game1 = getGame();
+        game1.setGameStatus(GameStatus.COMPLETED);
+
+        GameStats gameStats = GameStats.builder()
+                .homeTeam(TEAM_3)
+                .awayTeam(AWAY_TEAM)
+                .gameDate(GAME_DATE)
+                .numGameForDay(NUM_GAME_FOR_DAY)
+                .build();
+        BettingStats bettingStats = BettingStats.builder().build();
+
+        Game game2 = Game.fromGameAndBettingStats(gameStats, bettingStats);
+        game2.setGameStatus(GameStatus.IN_PROGRESS);
+
+        gamesDAO.saveGame(League.NFL, game1);
+        gamesDAO.saveGame(League.NFL, game2);
+
+        List<Game> inProgressGames = gamesDAO.getGamesForLeagueAndStatus(League.NFL, GameStatus.IN_PROGRESS);
+        assertThat(inProgressGames.size()).isEqualTo(1);
+
+        List<Game> completedGames = gamesDAO.getGamesForLeagueAndStatus(League.NFL, GameStatus.COMPLETED);
+        assertThat(completedGames.size()).isEqualTo(1);
+
+        List<Game> scheduledGames = gamesDAO.getGamesForLeagueAndStatus(League.NFL, GameStatus.SCHEDULED);
+        assertThat(scheduledGames.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void getGamesFromLeagueAndStatus_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(gameStatusTableIndex).query(any(QueryEnhancedRequest.class));
+
+        assertThatThrownBy(() -> gamesDAO.getGamesForLeagueAndStatus(League.NFL, GameStatus.COMPLETED))
                 .isInstanceOf(PersistenceException.class);
     }
 

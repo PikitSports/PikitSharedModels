@@ -1,10 +1,12 @@
 package com.pikit.shared.dao;
 
+import com.pikit.shared.dao.ddb.model.GameStatus;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.Game;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GamesDAO {
@@ -25,4 +27,13 @@ public interface GamesDAO {
      * @throws PersistenceException when we are unable to retrieve the game
      */
     Optional<Game> getGameFromId(League league, String gameId) throws PersistenceException;
+
+    /**
+     * Given a league, retrieve the games for this league with the specified game status
+     * @param league League to retrieve games for
+     * @param gameStatus Game status filter for games to return.
+     * @return List of games in specified league with specified game status
+     * @throws PersistenceException When we are unable to retrieve the games.
+     */
+    List<Game> getGamesForLeagueAndStatus(League league, GameStatus gameStatus) throws PersistenceException;
 }

@@ -1,6 +1,7 @@
 package com.pikit.shared.models;
 
 import com.pikit.shared.dao.ddb.model.DDBGame;
+import com.pikit.shared.dao.ddb.model.GameStatus;
 import com.pikit.shared.datasource.SportsReferenceConstants;
 import com.pikit.shared.enums.League;
 import lombok.*;
@@ -38,6 +39,7 @@ public class Game {
     private Map<String, String> homeTeamStats;
     private Map<String, String> awayTeamStats;
     private Map<String, String> bettingStats;
+    private GameStatus gameStatus;
 
     public String gameId() {
         String homeTeam = gameStats.get(HOME_TEAM);
@@ -235,6 +237,7 @@ public class Game {
                 .league(league)
                 .gameStats(ddbGameStats)
                 .bettingStats(ddbBettingStats)
+                .gameStatus(gameStatus)
                 .homeTeamStats(teamBoxScore(league, homeTeamStats))
                 .awayTeamStats(teamBoxScore(league, awayTeamStats))
                 .build();
