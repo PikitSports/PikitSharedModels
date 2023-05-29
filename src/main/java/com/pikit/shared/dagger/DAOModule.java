@@ -8,6 +8,7 @@ import com.pikit.shared.dao.ddb.*;
 import com.pikit.shared.dao.ddb.model.*;
 import com.pikit.shared.dao.s3.S3DataSourceDAO;
 import com.pikit.shared.dao.s3.S3GamesThatMeetModelDAO;
+import com.pikit.shared.dao.s3.S3TodaysGamesDAO;
 import com.pikit.shared.dao.s3.S3TopModelsForLeagueDAO;
 import dagger.Module;
 import dagger.Provides;
@@ -116,5 +117,12 @@ public class DAOModule {
     static TopModelsForLeagueDAO topModelsForLeagueDAO(S3Client s3Client) {
         String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
         return new S3TopModelsForLeagueDAO(s3Client, gamesBucketName);
+    }
+
+    @Provides
+    @Reusable
+    static TodaysGamesDAO todaysGamesDAO(S3Client s3Client) {
+        String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
+        return new S3TodaysGamesDAO(s3Client, gamesBucketName);
     }
 }
