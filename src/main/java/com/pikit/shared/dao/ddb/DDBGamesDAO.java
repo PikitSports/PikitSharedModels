@@ -24,14 +24,10 @@ import java.util.stream.Collectors;
 public class DDBGamesDAO implements GamesDAO {
     private final DynamoDbTable<DDBGame> gamesTable;
     private final DynamoDbIndex<DDBGame> gameStatusIndex;
-    private final DynamoDbIndex<DDBGame> gameDateIndex;
 
-    public DDBGamesDAO(DynamoDbTable<DDBGame> gamesTable,
-                       DynamoDbIndex<DDBGame> gameStatusIndex,
-                       DynamoDbIndex<DDBGame> gameDateIndex) {
+    public DDBGamesDAO(DynamoDbTable<DDBGame> gamesTable, DynamoDbIndex<DDBGame> gameStatusIndex) {
         this.gamesTable = gamesTable;
         this.gameStatusIndex = gameStatusIndex;
-        this.gameDateIndex = gameDateIndex;
     }
 
     @Override
@@ -103,27 +99,6 @@ public class DDBGamesDAO implements GamesDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown updating game status {}:{}", league, game.gameId());
             throw new PersistenceException("Failed to update game status");
-        }
-    }
-
-    @Override
-    public List<Game> getGamesForLeagueAndDate(League league, String gameDate) throws PersistenceException {
-        try {
-            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
-                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
-                            .partitionValue(league.toString())
-                            .sortValue(gameDate)
-                            .build()))
-                    .build();
-
-            return gameDateIndex.query(request)
-                    .stream()
-                    .flatMap(page -> page.items().stream())
-                    .map(DDBGame::toGame)
-                    .collect(Collectors.toList());
-        } catch (DynamoDbException e) {
-            log.error("[DynamoDB] Exception thrown getting games from league {} and date {}", league, gameDate, e);
-            throw new PersistenceException("Failed to get games from league for date");
         }
     }
 }

@@ -45,13 +45,4 @@ public interface GamesDAO {
      * @throws PersistenceException When we are unable to update the game status.
      */
     void updateGameStatus(League league, Game game, GameStatus gameStatus) throws PersistenceException;
-
-    /**
-     * Given a league and a date, retrieve the games by this game date.
-     * @param league League to retrieve games for
-     * @param gameDate Date to retrieve games for
-     * @return List of games for this league and date
-     * @throws PersistenceException when we are unable to retrieve list of games.
-     */
-    List<Game> getGamesForLeagueAndDate(League league, String gameDate) throws PersistenceException;
 }

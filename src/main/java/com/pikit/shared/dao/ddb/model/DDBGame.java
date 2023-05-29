@@ -26,7 +26,6 @@ public class DDBGame {
     private static final String GAME_STATUS_ATTRIBUTE = "gameStatus";
     private static final String GAME_DATE_ATTRIBUTE = "gameDate";
     private static final String GAME_STATUS_INDEX = "gameStatusIndex";
-    private static final String GAME_DATE_INDEX = "gameDateIndex";
 
     @Getter(onMethod_ = {
             @DynamoDbAttribute(GAME_ID_ATTRIBUTE),
@@ -34,6 +33,11 @@ public class DDBGame {
     })
     private String gameId;
 
+    @Getter(onMethod_ = {
+            @DynamoDbAttribute(LEAGUE_ATTRIBUTE),
+            @DynamoDbSortKey,
+            @DynamoDbSecondaryPartitionKey(indexNames = GAME_STATUS_INDEX)
+    })
     private League league;
 
     @Getter(onMethod_ = {
@@ -67,17 +71,9 @@ public class DDBGame {
     private GameStatus gameStatus;
 
     @Getter(onMethod_ = {
-            @DynamoDbAttribute(GAME_DATE_ATTRIBUTE),
-            @DynamoDbSecondarySortKey(indexNames = GAME_DATE_INDEX)
+            @DynamoDbAttribute(GAME_DATE_ATTRIBUTE)
     })
     private String gameDate;
-
-    @DynamoDbAttribute(LEAGUE_ATTRIBUTE)
-    @DynamoDbSortKey
-    @DynamoDbSecondaryPartitionKey(indexNames = {GAME_STATUS_INDEX, GAME_DATE_INDEX})
-    public League getLeague() {
-        return league;
-    }
 
     public Game toGame() {
         return Game.builder()
