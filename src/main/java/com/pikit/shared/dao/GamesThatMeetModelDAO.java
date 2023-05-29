@@ -1,6 +1,6 @@
 package com.pikit.shared.dao;
 
-import com.pikit.shared.dao.ddb.model.DDBGamesThatMeetModel;
+import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
 
@@ -38,5 +38,5 @@ public interface GamesThatMeetModelDAO {
      * @return List of games that meet model
      * @throws PersistenceException
      */
-    List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException;
+    List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException;
 }

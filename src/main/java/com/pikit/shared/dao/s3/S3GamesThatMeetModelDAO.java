@@ -1,9 +1,11 @@
 package com.pikit.shared.dao.s3;
 
 import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.pikit.shared.client.S3Client;
 import com.pikit.shared.dao.GamesThatMeetModelDAO;
+import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +52,16 @@ public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     }
 
     @Override
-    public List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException {
+    public List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException {
         try {
-            return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<List<GameThatMeetsModel>>(){}, false);
+            return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<>(){}, false);
+        } catch (AmazonS3Exception e) {
+            log.error("[S3] AmazonS3Exception thrown getting games that meet model {} for season {}", modelId, season, e);
+            if (e.getErrorCode().equals("NoSuchKey")) {
+                throw new NotFoundException("Key does not exist");
+            } else {
+                throw new PersistenceException("Failed to get games that meet model for season");
+            }
         } catch (SdkClientException | IOException e) {
             log.error("[S3] Exception thrown getting games that meet model {} for season {}", modelId, season, e);
             throw new PersistenceException("Failed to get games that meet model for season");

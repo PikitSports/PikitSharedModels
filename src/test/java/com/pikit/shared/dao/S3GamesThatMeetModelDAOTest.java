@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.pikit.shared.client.S3Client;
 import com.pikit.shared.dao.s3.S3GamesThatMeetModelDAO;
+import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
 import org.assertj.core.api.Assertions;
@@ -105,7 +106,7 @@ public class S3GamesThatMeetModelDAOTest {
     }
 
     @Test
-    public void getGamesThatMeetModel_success() throws IOException, PersistenceException {
+    public void getGamesThatMeetModel_success() throws IOException, PersistenceException, NotFoundException {
         List<GameThatMeetsModel> gamesThatMeetModel = new ArrayList<>();
         gamesThatMeetModel.add(GameThatMeetsModel.builder().gameId(GAME).build());
 
@@ -118,11 +119,20 @@ public class S3GamesThatMeetModelDAOTest {
     }
 
     @Test
-    public void getGamesThatMeetModel_noneExist() throws PersistenceException, IOException {
+    public void getGamesThatMeetModel_noneExist() throws PersistenceException, IOException, NotFoundException {
         when(s3Client.getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class), eq(false))).thenReturn(Collections.emptyList());
         List<GameThatMeetsModel> gamesThatMeetModel = s3GamesThatMeetModelDAO.getGamesThatMeetModelForSeason(MODEL_ID, SEASON);
         assertThat(gamesThatMeetModel).isNotNull();
         assertThat(gamesThatMeetModel.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void getGamesThatMeetModel_s3KeyNotFoundException() throws IOException {
+        AmazonS3Exception s3Exception = mock(AmazonS3Exception.class);
+        when(s3Exception.getErrorCode()).thenReturn("NoSuchKey");
+        doThrow(s3Exception).when(s3Client).getTypeReferenceFromS3(eq(BUCKET_NAME), eq(S3_KEY), any(TypeReference.class), eq(false));
+        assertThatThrownBy(() -> s3GamesThatMeetModelDAO.getGamesThatMeetModelForSeason(MODEL_ID, SEASON))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
