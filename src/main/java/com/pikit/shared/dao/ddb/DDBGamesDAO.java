@@ -13,6 +13,7 @@ import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.UpdateItemEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import java.util.List;
@@ -80,6 +81,24 @@ public class DDBGamesDAO implements GamesDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown getting games from league {} and status {}", league, gameStatus, e);
             throw new PersistenceException("Failed to get games from league");
+        }
+    }
+
+    @Override
+    public void updateGameStatus(League league, Game game, GameStatus gameStatus) throws PersistenceException {
+        DDBGame ddbGame = game.toDDBGame(league);
+        ddbGame.setGameStatus(gameStatus);
+
+        try {
+            UpdateItemEnhancedRequest<DDBGame> request = UpdateItemEnhancedRequest.builder(DDBGame.class)
+                    .item(ddbGame)
+                    .ignoreNulls(true)
+                    .build();
+
+            gamesTable.updateItem(request);
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown updating game status {}:{}", league, game.gameId());
+            throw new PersistenceException("Failed to update game status");
         }
     }
 }

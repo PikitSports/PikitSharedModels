@@ -13,10 +13,7 @@ import com.pikit.shared.models.GameStats;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.enhanced.dynamodb.*;
-import software.amazon.awssdk.enhanced.dynamodb.model.CreateTableEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.EnhancedGlobalSecondaryIndex;
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest;
-import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.Projection;
@@ -156,6 +153,38 @@ public class DDBGamesDAOTest {
         doThrow(DynamoDbException.class).when(gameStatusTableIndex).query(any(QueryEnhancedRequest.class));
 
         assertThatThrownBy(() -> gamesDAO.getGamesForLeagueAndStatus(League.NFL, GameStatus.COMPLETED))
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void updateGameStatus_successTest() throws PersistenceException {
+        Game game = getGame();
+        game.setGameStatus(GameStatus.IN_PROGRESS);
+
+        gamesDAO.saveGame(League.MLB, game);
+
+        DDBGame gameGet = gamesTable.getItem(Key.builder()
+                .partitionValue(EXPECTED_GAME_ID)
+                .sortValue(League.MLB.toString())
+                .build());
+
+        assertThat(gameGet.getGameStatus()).isEqualTo(GameStatus.IN_PROGRESS);
+
+        gamesDAO.updateGameStatus(League.MLB, game, GameStatus.CANCELLED);
+
+        gameGet = gamesTable.getItem(Key.builder()
+                .partitionValue(EXPECTED_GAME_ID)
+                .sortValue(League.MLB.toString())
+                .build());
+
+        assertThat(gameGet.getGameStatus()).isEqualTo(GameStatus.CANCELLED);
+    }
+
+    @Test
+    public void updateGameStatus_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(gamesTable).updateItem(any(UpdateItemEnhancedRequest.class));
+
+        assertThatThrownBy(() -> gamesDAO.updateGameStatus(League.MLB, getGame(), GameStatus.IN_PROGRESS))
                 .isInstanceOf(PersistenceException.class);
     }
 

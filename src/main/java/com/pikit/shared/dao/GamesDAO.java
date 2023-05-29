@@ -36,4 +36,13 @@ public interface GamesDAO {
      * @throws PersistenceException When we are unable to retrieve the games.
      */
     List<Game> getGamesForLeagueAndStatus(League league, GameStatus gameStatus) throws PersistenceException;
+
+    /**
+     * Given a league and a game, update the game status to the desired game status
+     * @param league League of the game
+     * @param game Game object
+     * @param gameStatus Game status to update the game to
+     * @throws PersistenceException When we are unable to update the game status.
+     */
+    void updateGameStatus(League league, Game game, GameStatus gameStatus) throws PersistenceException;
 }
