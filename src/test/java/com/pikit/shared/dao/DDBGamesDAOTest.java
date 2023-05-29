@@ -39,6 +39,7 @@ public class DDBGamesDAOTest {
     private DynamoDbTable<DDBGame> gamesTable;
     private DDBGamesDAO gamesDAO;
     private DynamoDbIndex<DDBGame> gameStatusTableIndex;
+    private DynamoDbIndex<DDBGame> gameDateTableIndex;
 
     @BeforeEach
     public void setup() {
@@ -60,13 +61,21 @@ public class DDBGamesDAOTest {
                         .build())
                 .build();
 
+        EnhancedGlobalSecondaryIndex gameDateIndex = EnhancedGlobalSecondaryIndex.builder()
+                .indexName("gameDateIndex")
+                .projection(Projection.builder()
+                        .projectionType(ProjectionType.ALL)
+                        .build())
+                .build();
+
         gamesTable.createTable(CreateTableEnhancedRequest.builder()
-                .globalSecondaryIndices(gameStatusIndex)
+                .globalSecondaryIndices(gameStatusIndex, gameDateIndex)
                 .build());
 
         gameStatusTableIndex = spy(gamesTable.index("gameStatusIndex"));
+        gameDateTableIndex = spy(gamesTable.index("gameDateIndex"));
 
-        gamesDAO = new DDBGamesDAO(gamesTable, gameStatusTableIndex);
+        gamesDAO = new DDBGamesDAO(gamesTable, gameStatusTableIndex, gameDateTableIndex);
     }
 
     @Test
@@ -187,6 +196,33 @@ public class DDBGamesDAOTest {
         assertThatThrownBy(() -> gamesDAO.updateGameStatus(League.MLB, getGame(), GameStatus.IN_PROGRESS))
                 .isInstanceOf(PersistenceException.class);
     }
+
+    @Test
+    public void getGamesByLeagueAndDate_successTest() throws PersistenceException {
+        gamesDAO.saveGame(League.NFL, getGame());
+
+        List<Game> games = gamesDAO.getGamesForLeagueAndDate(League.NFL, GAME_DATE);
+
+        assertThat(games.size()).isEqualTo(1);
+        assertThat(games.get(0).gameId()).isEqualTo(EXPECTED_GAME_ID);
+    }
+
+    @Test
+    public void getGamesByLeagueAndDate_notFound() throws PersistenceException {
+        gamesDAO.saveGame(League.NFL, getGame());
+
+        List<Game> games = gamesDAO.getGamesForLeagueAndDate(League.MLB, GAME_DATE);
+
+        assertThat(games.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void getGamesByLeagueAndDate_exceptionThrown() {
+        doThrow(DynamoDbException.class).when(gameDateTableIndex).query(any(QueryEnhancedRequest.class));
+        assertThatThrownBy(() -> gamesDAO.getGamesForLeagueAndDate(League.MLB, GAME_DATE))
+                .isInstanceOf(PersistenceException.class);
+    }
+
 
     private Game getGame() {
         GameStats gameStats = GameStats.builder()

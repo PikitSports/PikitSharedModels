@@ -4,5 +4,6 @@ public enum GameStatus {
     SCHEDULED,
     IN_PROGRESS,
     COMPLETED,
+    RECENTLY_COMPLETED,
     CANCELLED
 }

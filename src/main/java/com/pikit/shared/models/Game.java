@@ -238,6 +238,7 @@ public class Game {
                 .gameStats(ddbGameStats)
                 .bettingStats(ddbBettingStats)
                 .gameStatus(gameStatus)
+                .gameDate(gameDate())
                 .homeTeamStats(teamBoxScore(league, homeTeamStats))
                 .awayTeamStats(teamBoxScore(league, awayTeamStats))
                 .build();
