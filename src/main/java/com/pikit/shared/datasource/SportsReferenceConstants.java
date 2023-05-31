@@ -131,7 +131,7 @@ public final class SportsReferenceConstants {
         if (NBA_MAP.containsKey(teamName)) {
             return NBA_MAP.get(teamName);
         } else {
-            throw new RuntimeException("Could not find NFL team name mapping: " + teamName);
+            throw new RuntimeException("Could not find NBA team name mapping: " + teamName);
         }
     }
 
@@ -139,7 +139,7 @@ public final class SportsReferenceConstants {
         if (MLB_MAP.containsKey(teamName)) {
             return MLB_MAP.get(teamName);
         } else {
-            throw new RuntimeException("Could not find NFL team name mapping: " + teamName);
+            throw new RuntimeException("Could not find MLB team name mapping: " + teamName);
         }
     }
 }
