@@ -25,7 +25,7 @@
           <entry name="$MAVEN_REPOSITORY$/javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar" />
         </processorPath>
-        <module name="PikitSharedModels" />
+        <module name="shared-models" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
