@@ -36,6 +36,8 @@ public class DAOModule {
     private static final String LAST_50_GAMES_INDEX_NAME = "last50GamesIndex";
     private static final String LAST_100_GAMES_INDEX_NAME = "last100GamesIndex";
     private static final String GAME_STATUS_INDEX_NAME = "gameStatusIndex";
+    private static final String GROUPS_TABLE_NAME = "Groups";
+    private static final String USER_GROUPS_INDEX = "userGroupsIndex";
 
     @Provides
     @Reusable
@@ -124,5 +126,14 @@ public class DAOModule {
     static TodaysGamesDAO todaysGamesDAO(S3Client s3Client) {
         String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
         return new S3TodaysGamesDAO(s3Client, gamesBucketName);
+    }
+
+    @Provides
+    @Reusable
+    static GroupDAO groupDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbTable<DDBGroup> groupsTable = dynamoDbEnhancedClient.table(GROUPS_TABLE_NAME, TableSchema.fromBean(DDBGroup.class));
+        DynamoDbIndex<DDBGroup> userGroupsIndex = groupsTable.index(USER_GROUPS_INDEX);
+
+        return new DDBGroupDAO(groupsTable, userGroupsIndex);
     }
 }
