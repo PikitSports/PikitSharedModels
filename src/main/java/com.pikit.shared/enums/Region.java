@@ -1,5 +1,5 @@
 package com.pikit.shared.enums;
 
 public enum Region {
-    EAST, WEST, CENTRAL
+    EAST, WEST, CENTRAL, COLLINS_HOUSE
 }
