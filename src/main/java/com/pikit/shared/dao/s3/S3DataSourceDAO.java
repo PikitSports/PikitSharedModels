@@ -29,6 +29,8 @@ import java.util.zip.GZIPOutputStream;
 public class S3DataSourceDAO implements DataSourceDAO {
     private static final String DATA_SOURCE_KEY = "%s/finalized/%s.json.gz";
     private static final String DATA_SOURCE_CONFIG_KEY = "%s/dataSourceConfig.json";
+
+    private static Map<String, Map<String, StatMetadata>> leagueMetadataMap = new HashMap<>();
     private final AmazonS3 amazonS3;
     private final String bucketName;
     private final ObjectMapper objectMapper;
@@ -151,10 +153,16 @@ public class S3DataSourceDAO implements DataSourceDAO {
 
     @Override
     public Map<String, StatMetadata> getStatsAvailableForLeague(League league) throws PersistenceException {
+        if (leagueMetadataMap.get(league.toString()) != null) {
+            return leagueMetadataMap.get(league.toString());
+        }
+
         try {
             String dataSourceConfigFile = String.format(DATA_SOURCE_CONFIG_KEY, league);
             S3Object object = amazonS3.getObject(bucketName, dataSourceConfigFile);
             DataSourceConfig dataSourceConfig = objectMapper.readValue(object.getObjectContent(), DataSourceConfig.class);
+
+            leagueMetadataMap.put(league.toString(), dataSourceConfig.getStatsAvailable());
             return dataSourceConfig.getStatsAvailable();
         } catch (Exception e) {
             log.error("[S3] Exception thrown getting stats available for league {}", league, e);

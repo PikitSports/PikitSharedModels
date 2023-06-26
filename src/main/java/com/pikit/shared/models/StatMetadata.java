@@ -16,4 +16,5 @@ public class StatMetadata {
     private DataType dataType;
     private VariableType variableType;
     private FilterType filterType; //This tells us how we should process a model requirement using this stat.
+    private String mapping; //This tells us what the value will be called in the data source raw file.
 }
