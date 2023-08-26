@@ -13,7 +13,7 @@ import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.Game;
 import com.pikit.shared.models.StatMetadata;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-@Slf4j
+@Log4j2
 public class S3DataSourceDAO implements DataSourceDAO {
     private static final String DATA_SOURCE_KEY = "%s/finalized/%s.json.gz";
     private static final String DATA_SOURCE_CONFIG_KEY = "%s/dataSourceConfig.json";

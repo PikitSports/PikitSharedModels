@@ -3,7 +3,7 @@ package com.pikit.shared.dao.ddb;
 import com.pikit.shared.dao.ModelFollowersDAO;
 import com.pikit.shared.dao.ddb.model.DDBModelFollowers;
 import com.pikit.shared.exceptions.PersistenceException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class DDBModelFollowersDAO implements ModelFollowersDAO {
     private final DynamoDbTable<DDBModelFollowers> modelFollowersTable;
     private final DynamoDbIndex<DDBModelFollowers> userIdIndex;

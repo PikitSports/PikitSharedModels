@@ -2,9 +2,9 @@ package com.pikit.shared.handlers;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public class TestHandler implements RequestHandler<TestHandlerRequest, TestHandlerResponse> {
     @Override
     public TestHandlerResponse handleRequest(TestHandlerRequest input, Context context) {

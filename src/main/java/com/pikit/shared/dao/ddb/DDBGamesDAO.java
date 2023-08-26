@@ -6,7 +6,7 @@ import com.pikit.shared.dao.ddb.model.GameStatus;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.Game;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class DDBGamesDAO implements GamesDAO {
     private final DynamoDbTable<DDBGame> gamesTable;
     private final DynamoDbIndex<DDBGame> gameStatusIndex;

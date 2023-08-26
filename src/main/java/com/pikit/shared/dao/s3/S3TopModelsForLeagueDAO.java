@@ -7,12 +7,12 @@ import com.pikit.shared.dao.ddb.model.DDBModel;
 import com.pikit.shared.dao.s3.model.LastGamesIndex;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.PersistenceException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
 import java.util.List;
 
-@Slf4j
+@Log4j2
 public class S3TopModelsForLeagueDAO implements TopModelsForLeagueDAO {
     private static final String TOP_MODELS_FOR_LEAGUE_PATH = "%s/topModelsForLeague/%s.json";
     //Temporary cache for lambda. This will help during the 15 minutes of execution time of the lambda so we don't have to call S3 for every request.

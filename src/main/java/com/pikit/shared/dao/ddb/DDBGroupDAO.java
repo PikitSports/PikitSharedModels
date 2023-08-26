@@ -4,7 +4,7 @@ import com.pikit.shared.dao.GroupDAO;
 import com.pikit.shared.dao.ddb.model.DDBGroup;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class DDBGroupDAO implements GroupDAO {
 
     private final DynamoDbTable<DDBGroup> groupsTable;

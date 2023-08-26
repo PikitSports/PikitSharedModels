@@ -3,7 +3,7 @@ package com.pikit.shared.dao.ddb;
 import com.pikit.shared.dao.UserDAO;
 import com.pikit.shared.dao.ddb.model.DDBUser;
 import com.pikit.shared.exceptions.PersistenceException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class DDBUserDAO implements UserDAO {
     private final DynamoDbTable<DDBUser> usersTable;
 

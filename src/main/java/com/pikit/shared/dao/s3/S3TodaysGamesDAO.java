@@ -6,11 +6,11 @@ import com.pikit.shared.dao.TodaysGamesDAO;
 import com.pikit.shared.enums.League;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.RecentGame;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
-@Slf4j
+@Log4j2
 public class S3TodaysGamesDAO implements TodaysGamesDAO {
     private static final String CURRENT_SCORES_KEY = "%s/currentScores/currentScores.json";
     private final S3Client s3Client;

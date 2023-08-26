@@ -8,12 +8,12 @@ import com.pikit.shared.dao.GamesThatMeetModelDAO;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.GameThatMeetsModel;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+@Log4j2
 public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     private static final String GAMES_THAT_MEET_MODEL_KEY = "%s/%s.json";
     private final S3Client s3Client;

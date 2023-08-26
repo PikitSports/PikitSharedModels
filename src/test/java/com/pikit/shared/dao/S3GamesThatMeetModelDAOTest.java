@@ -1,8 +1,6 @@
 package com.pikit.shared.dao;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
-import com.amazonaws.services.redshift.model.BucketNotFoundException;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.pikit.shared.client.S3Client;

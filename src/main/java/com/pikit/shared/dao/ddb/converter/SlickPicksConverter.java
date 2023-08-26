@@ -2,9 +2,9 @@ package com.pikit.shared.dao.ddb.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pikit.shared.exceptions.InternalErrorException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public class SlickPicksConverter {
     private static ObjectMapper objectMapper = new ObjectMapper();
 

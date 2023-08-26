@@ -9,7 +9,7 @@ import com.pikit.shared.models.ModelConfiguration;
 import com.pikit.shared.models.ModelPerformance;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 import com.pikit.shared.models.ModelProfitabilityStats;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Expression;
@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log4j2
 public class DDBModelDAO implements ModelDAO {
 
     private final DynamoDbTable<DDBModel> modelsTable;
