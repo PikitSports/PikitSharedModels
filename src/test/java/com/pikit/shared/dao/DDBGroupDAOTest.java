@@ -221,4 +221,38 @@ public class DDBGroupDAOTest {
 
         assertThat(newGroup).isNotNull();
     }
+
+    @Test
+    public void getModels_successTest() throws PersistenceException, NotFoundException {
+        String modelToAdd = "model_to_add";
+        String groupId = groupDAO.createGroup(USER, MODEL_ID, GROUP_NAME);
+
+        groupDAO.addModelToGroup(groupId, modelToAdd);
+
+        List<String> models = groupDAO.getModels(groupId);
+
+        assertThat(models).contains(modelToAdd);
+    }
+
+    @Test
+    public void getModels_notExists() throws PersistenceException {
+        assertThatThrownBy(() -> groupDAO.getModels("unkownGroup"))
+                .isInstanceOf(PersistenceException.class);
+    }
+
+    @Test
+    public void getModels_exceptionThrown() throws PersistenceException {
+        String groupId = groupDAO.createGroup(USER, MODEL_ID, GROUP_NAME);
+
+        DDBGroup currentGroup = groupsTable.getItem(Key.builder()
+                .partitionValue(groupId)
+                .build());
+
+        assertThat(currentGroup).isNotNull();
+
+        doThrow(DynamoDbException.class).when(groupsTable).getItem(any(GetItemEnhancedRequest.class));
+
+        assertThatThrownBy(() -> groupDAO.getModels(groupId))
+                .isInstanceOf(PersistenceException.class);
+    }
 }

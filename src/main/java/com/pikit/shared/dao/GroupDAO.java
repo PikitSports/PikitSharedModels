@@ -50,4 +50,11 @@ public interface GroupDAO {
      */
     void deleteGroup(String groupId) throws PersistenceException;
 
+    /**
+     * Given a groupId, return the models contained in this group
+     * @param groupId id of the group
+     * @return
+     * @throws PersistenceException
+     */
+    List<String> getModels(String groupId) throws PersistenceException, NotFoundException;
 }
