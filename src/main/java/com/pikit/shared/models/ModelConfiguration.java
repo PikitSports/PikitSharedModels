@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pikit.shared.enums.Bet;
 import com.pikit.shared.enums.BetType;
 import com.pikit.shared.enums.League;
+import com.pikit.shared.enums.ModelTimeRange;
 import lombok.*;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public class ModelConfiguration {
     private List<Bet> betsTaken;
     private BetType betType;
     private List<String> seasonsStored;
+    private ModelTimeRange timeRange;
 }
