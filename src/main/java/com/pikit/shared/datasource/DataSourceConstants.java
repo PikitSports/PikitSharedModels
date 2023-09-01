@@ -12,7 +12,7 @@ public final class DataSourceConstants {
 
     private static final String NFL_CURRENT_SEASON = "2023";
     private static final String MLB_CURRENT_SEASON = "2023";
-    private static final String NBA_CURRENT_SEASON = "2022";
+    private static final String NBA_CURRENT_SEASON = "2023";
 
     public static String getCurrentSeasonForLeague(League league) {
         switch (league) {
