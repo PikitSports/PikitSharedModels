@@ -39,4 +39,6 @@ public interface GamesThatMeetModelDAO {
      * @throws PersistenceException
      */
     List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException;
+
+    void deleteAllGamesThatMeetModel(String modelId) throws PersistenceException;
 }

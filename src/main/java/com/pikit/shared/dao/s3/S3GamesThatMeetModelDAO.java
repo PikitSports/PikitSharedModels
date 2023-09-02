@@ -52,6 +52,19 @@ public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     }
 
     @Override
+    public void deleteAllGamesThatMeetModel(String modelId) throws PersistenceException {
+        try {
+            List<String> seasonsToDelete = s3Client.getListOfKeysFromS3Path(bucketName, modelId);
+            for (String season: seasonsToDelete) {
+                s3Client.deleteObjectFromS3(bucketName, season);
+            }
+        } catch (Exception e) {
+            log.error("[S3] Exception thrown deleting all games that meet model {}", modelId, e);
+            throw new PersistenceException("Failed to delete all games that meet model for season");
+        }
+    }
+
+    @Override
     public List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException {
         try {
             return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<>(){}, false);
