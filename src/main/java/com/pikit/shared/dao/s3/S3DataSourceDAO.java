@@ -18,10 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -47,9 +44,20 @@ public class S3DataSourceDAO implements DataSourceDAO {
             String dataSourceFile = String.format(DATA_SOURCE_KEY, league, season);
             S3Object object = amazonS3.getObject(bucketName, dataSourceFile);
             GZIPInputStream gzipInputStream = new GZIPInputStream(object.getObjectContent());
-            List<Game> games = objectMapper.readValue(gzipInputStream, new TypeReference<List<Game>>(){});
+            List<Game> games = objectMapper.readValue(gzipInputStream, new TypeReference<List<Game>>() {
+            });
             gzipInputStream.close();
             return games;
+        } catch (AmazonS3Exception e) {
+            log.error("[S3] Exception thrown getting {} games for season {}", league, season, e);
+            if (e.getErrorCode().equals("NoSuchKey")) {
+                log.warn("[S3] NoSuchKey error getting games for season. Likely a new season and need to create new file.");
+                //Save empty list of games. This is likely due to a new season. Simply create new games file with empty list.
+                saveGamesForSeason(league, season, Collections.emptyList());
+                return Collections.emptyList();
+            } else {
+                throw new PersistenceException("Failed to get games for season");
+            }
         } catch (Exception e) {
             log.error("[S3] Exception thrown getting {} games for season {}", league, season, e);
             throw new PersistenceException("Failed to get games for season");
