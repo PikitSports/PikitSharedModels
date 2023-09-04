@@ -17,12 +17,12 @@ import java.util.List;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelRequirement {
-    private boolean forOpponent;
+    private Boolean forOpponent;
     private String description;
     private String statUsed;
-    private boolean comparingOpponent;
-    private double comparisonValue;
+    private Boolean comparingOpponent;
+    private Double comparisonValue;
     private ConditionRequirement conditionRequirement;
     private List<String> acceptedStringValues;
-    private boolean expectedBooleanValue;
+    private Boolean expectedBooleanValue;
 }
