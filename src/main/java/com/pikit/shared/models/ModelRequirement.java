@@ -20,7 +20,7 @@ public class ModelRequirement {
     private Boolean forOpponent;
     private String description;
     private String statUsed;
-    private Boolean comparingOpponent;
+    private boolean comparingOpponent;
     private Double comparisonValue;
     private ConditionRequirement conditionRequirement;
     private List<String> acceptedStringValues;
