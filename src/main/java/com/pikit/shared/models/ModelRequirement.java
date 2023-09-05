@@ -25,5 +25,5 @@ public class ModelRequirement {
     private ConditionRequirement conditionRequirement;
     private List<String> acceptedStringValues;
     private Boolean expectedBooleanValue;
-    private Integer variantUsed;
+    private Integer variant;
 }
