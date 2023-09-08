@@ -56,7 +56,7 @@ public class DDBGroupDAO implements GroupDAO {
         try {
             Optional<DDBGroup> groupOptional = getGroupFromId(groupId);
 
-            if (!groupOptional.isPresent()) {
+            if (groupOptional.isEmpty()) {
                 log.error("Group attempting to update was not found {}", groupId);
                 throw new NotFoundException("Group not found");
             }
@@ -133,6 +133,29 @@ public class DDBGroupDAO implements GroupDAO {
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown deleting group {}", groupId, e);
             throw new PersistenceException("Failed to delete group");
+        }
+    }
+
+    public List<String> getModels(String groupId) throws PersistenceException, NotFoundException {
+        try {
+            GetItemEnhancedRequest request = GetItemEnhancedRequest.builder()
+                    .key(Key.builder()
+                            .partitionValue(groupId)
+                            .build())
+                    .consistentRead(true)
+                    .build();
+
+            DDBGroup group = groupsTable.getItem(request);
+
+            if (group != null) {
+                return group.getModelIds();
+            } else {
+                log.error("Group {} came back as null.", groupId);
+                throw new NotFoundException("Failed to get group");
+            }
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown retrieving group {}", groupId, e);
+            throw new PersistenceException("Failed to get group");
         }
     }
 }
