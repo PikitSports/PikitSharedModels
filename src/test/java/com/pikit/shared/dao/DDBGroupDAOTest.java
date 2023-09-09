@@ -235,9 +235,9 @@ public class DDBGroupDAOTest {
     }
 
     @Test
-    public void getModels_notExists() throws PersistenceException {
+    public void getModels_notExists() {
         assertThatThrownBy(() -> groupDAO.getModels("unkownGroup"))
-                .isInstanceOf(PersistenceException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
