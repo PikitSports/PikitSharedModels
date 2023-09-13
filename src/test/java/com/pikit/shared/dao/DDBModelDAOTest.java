@@ -3,8 +3,10 @@ package com.pikit.shared.dao;
 import com.pikit.shared.dao.ddb.DDBModelDAO;
 import com.pikit.shared.dao.ddb.model.DDBModel;
 import com.pikit.shared.dao.ddb.model.ModelStatus;
+import com.pikit.shared.datasource.DataSourceConstants;
 import com.pikit.shared.dynamodb.LocalDynamoDB;
 import com.pikit.shared.enums.League;
+import com.pikit.shared.enums.ModelTimeRange;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
@@ -107,12 +109,15 @@ public class DDBModelDAOTest {
     public void createModel_successTest() throws PersistenceException {
         String modelId = modelDAO.createModel(USER, ModelConfiguration.builder()
                 .league(League.NFL)
+                .timeRange(ModelTimeRange.LAST_3_SEASONS)
                 .build());
         DDBModel model = modelsTable.getItem(Key.builder().partitionValue(modelId).build());
         assertThat(model).isNotNull();
         assertThat(model.getUserCreatedBy()).isEqualTo(USER);
         assertThat(model.getModelConfiguration().getLeague()).isEqualTo(League.NFL);
         assertThat(model.getModelStatus()).isEqualTo(ModelStatus.CREATING);
+        assertThat(model.getModelConfiguration().getSeasonsStored())
+                .isEqualTo(DataSourceConstants.getModelSeasons(League.NFL, ModelTimeRange.LAST_3_SEASONS));
     }
 
     @Test

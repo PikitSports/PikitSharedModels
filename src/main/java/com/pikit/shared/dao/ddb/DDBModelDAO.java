@@ -2,7 +2,9 @@ package com.pikit.shared.dao.ddb;
 
 import com.pikit.shared.dao.ModelDAO;
 import com.pikit.shared.dao.ddb.model.ModelStatus;
+import com.pikit.shared.datasource.DataSourceConstants;
 import com.pikit.shared.enums.League;
+import com.pikit.shared.enums.ModelTimeRange;
 import com.pikit.shared.exceptions.NotFoundException;
 import com.pikit.shared.exceptions.PersistenceException;
 import com.pikit.shared.models.ModelConfiguration;
@@ -51,6 +53,11 @@ public class DDBModelDAO implements ModelDAO {
     public String createModel(String userId, ModelConfiguration modelConfiguration) throws PersistenceException {
         String modelId = UUID.randomUUID().toString().replace("-", "");
         long creationTimestamp = System.currentTimeMillis();
+
+        if (modelConfiguration.getLeague() != null && modelConfiguration.getTimeRange() != null) {
+            ModelTimeRange timeRange = modelConfiguration.getTimeRange();
+            modelConfiguration.setSeasonsStored(DataSourceConstants.getModelSeasons(modelConfiguration.getLeague(), timeRange));
+        }
 
         DDBModel modelToSave = DDBModel.builder()
                 .modelId(modelId)
