@@ -14,6 +14,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class ModelPerformance {
     private Map<String, Map<Bet, BetProfitability>> individualSeasonProfitability;
+    private Map<String, List<ModelStatistic>> individualSeasonStatistics;
     private Map<Bet, BetProfitability> overallProfitability;
+    private List<ModelStatistic> overallStatistics;
     private List<TopGameData> latestGames;
 }
