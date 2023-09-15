@@ -41,4 +41,20 @@ public interface GamesThatMeetModelDAO {
     List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException;
 
     void deleteAllGamesThatMeetModel(String modelId) throws PersistenceException;
+
+    /**
+     * Given a modelId and a list of games that meet the model, persist these games.
+     * @param modelId ID of the model to persist games for.
+     * @param latestGames List of latest games that meet the model
+     * @throws PersistenceException when we are unable to store the latest games for the model
+     */
+    void storeLatestGamesForModel(String modelId, List<GameThatMeetsModel> latestGames) throws PersistenceException;
+
+    /**
+     * Given a modelId, retrieve and return a list of the latest games that meet the model
+     * @param modelId ID of the model to retrieve games for
+     * @return List of latest games that meet the model
+     * @throws PersistenceException when we are unable to retrieve the latest games for the model.
+     */
+    List<GameThatMeetsModel> getLatestGamesForModel(String modelId) throws PersistenceException, NotFoundException;
 }

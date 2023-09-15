@@ -16,6 +16,7 @@ import java.util.Map;
 @Log4j2
 public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     private static final String GAMES_THAT_MEET_MODEL_KEY = "%s/%s.json";
+    private static final String LATEST_GAMES_THAT_MEET_MODEL_KEY = "%s/latestGames.json";
     private final S3Client s3Client;
     private final String bucketName;
 
@@ -65,6 +66,33 @@ public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
     }
 
     @Override
+    public void storeLatestGamesForModel(String modelId, List<GameThatMeetsModel> latestGames) throws PersistenceException {
+        try {
+            s3Client.writeObjectToS3(bucketName, getLatestGamesThatMeetModelKey(modelId), latestGames, false);
+        } catch (SdkClientException | IOException e) {
+            log.error("[S3] Exception thrown adding latest games that meet model {}", modelId, e);
+            throw new PersistenceException("Failed to add latest games that meet model");
+        }
+    }
+
+    @Override
+    public List<GameThatMeetsModel> getLatestGamesForModel(String modelId) throws PersistenceException, NotFoundException {
+        try {
+            return s3Client.getTypeReferenceFromS3(bucketName, getLatestGamesThatMeetModelKey(modelId), new TypeReference<>(){}, false);
+        } catch (AmazonS3Exception e) {
+            log.error("[S3] AmazonS3Exception thrown getting latest games that meet model {}", modelId, e);
+            if (e.getErrorCode().equals("NoSuchKey")) {
+                throw new NotFoundException("Key does not exist");
+            } else {
+                throw new PersistenceException("Failed to get latest games that meet model");
+            }
+        } catch (SdkClientException | IOException e) {
+            log.error("[S3] Exception thrown getting latest games that meet model {}", modelId, e);
+            throw new PersistenceException("Failed to get latest games that meet model");
+        }
+    }
+
+    @Override
     public List<GameThatMeetsModel> getGamesThatMeetModelForSeason(String modelId, String season) throws PersistenceException, NotFoundException {
         try {
             return s3Client.getTypeReferenceFromS3(bucketName, getS3Key(modelId, season), new TypeReference<>(){}, false);
@@ -83,5 +111,9 @@ public class S3GamesThatMeetModelDAO implements GamesThatMeetModelDAO {
 
     private String getS3Key(String modelId, String season) {
         return String.format(GAMES_THAT_MEET_MODEL_KEY, modelId, season);
+    }
+
+    private String getLatestGamesThatMeetModelKey(String modelId) {
+        return String.format(LATEST_GAMES_THAT_MEET_MODEL_KEY, modelId);
     }
 }
