@@ -272,6 +272,7 @@ public class DDBModelDAO implements ModelDAO {
             return last10GamesIndex.query(request)
                     .stream()
                     .flatMap(page -> page.items().stream())
+                    .filter((model) -> model.getLast10Games() > 0)
                     .limit(pageSize)
                     .collect(Collectors.toList());
         } catch (DynamoDbException e) {
@@ -292,6 +293,7 @@ public class DDBModelDAO implements ModelDAO {
             return last50GamesIndex.query(request)
                     .stream()
                     .flatMap(page -> page.items().stream())
+                    .filter((model) -> model.getLast50Games() > 0)
                     .limit(pageSize)
                     .collect(Collectors.toList());
         } catch (DynamoDbException e) {
@@ -312,6 +314,7 @@ public class DDBModelDAO implements ModelDAO {
             return last100GamesIndex.query(request)
                     .stream()
                     .flatMap(page -> page.items().stream())
+                    .filter((model) -> model.getLast100Games() > 0)
                     .limit(pageSize)
                     .collect(Collectors.toList());
         } catch (DynamoDbException e) {
