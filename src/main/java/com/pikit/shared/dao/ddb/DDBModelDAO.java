@@ -267,6 +267,7 @@ public class DDBModelDAO implements ModelDAO {
                     .queryConditional(QueryConditional.keyEqualTo(Key.builder()
                             .partitionValue(league.toString())
                             .build()))
+                    .scanIndexForward(false)
                     .build();
 
             return last10GamesIndex.query(request)
@@ -288,6 +289,7 @@ public class DDBModelDAO implements ModelDAO {
                     .queryConditional(QueryConditional.keyEqualTo(Key.builder()
                             .partitionValue(league.toString())
                             .build()))
+                    .scanIndexForward(false)
                     .build();
 
             return last50GamesIndex.query(request)
@@ -309,6 +311,7 @@ public class DDBModelDAO implements ModelDAO {
                     .queryConditional(QueryConditional.keyEqualTo(Key.builder()
                             .partitionValue(league.toString())
                             .build()))
+                    .scanIndexForward(false)
                     .build();
 
             return last100GamesIndex.query(request)
