@@ -23,7 +23,7 @@ public class ModelRequirement {
     private boolean comparingOpponent;
     private Double comparisonValue;
     private ConditionRequirement conditionRequirement;
-    private List<String> acceptedStringValues;
+    private String acceptedStringValue;
     private Boolean expectedBooleanValue;
     private Integer variant;
 }
