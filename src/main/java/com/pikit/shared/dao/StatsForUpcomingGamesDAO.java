@@ -11,11 +11,10 @@ public interface StatsForUpcomingGamesDAO {
     /**
      * Given a game and stats for the game, persist the stats for the upcoming game.
      * @param league League of the game
-     * @param gameId ID of game to save stats for
-     * @param statsForUpcomingGame List of stats for the upcoming game
+     * @param statsForUpcomingGames List of stats for the upcoming games
      * @throws PersistenceException when we are unable to save stats
      */
-    void saveStatsForUpcomingGame(League league, String gameId, StatsForUpcomingGame statsForUpcomingGame) throws PersistenceException;
+    void saveStatsForUpcomingGames(League league, List<StatsForUpcomingGame> statsForUpcomingGames) throws PersistenceException;
 
     /**
      * Given a league, retrieve the stats for the upcoming games for this league

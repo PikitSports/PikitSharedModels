@@ -11,8 +11,7 @@ import java.util.List;
 
 @Log4j2
 public class S3StatsForUpcomingGameDAO implements StatsForUpcomingGamesDAO {
-    private static final String STATS_FOR_GAME_KEY = "%s/statsForUpcomingGames/%s.json";
-    private static final String STATS_FOR_LEAGUE_KEY = "%s/statsForUpcomingGames";
+    private static final String STATS_FOR_LEAGUE_KEY = "%s/statsForUpcomingGames.json";
     private final S3Client s3Client;
     private final String bucketName;
 
@@ -22,12 +21,12 @@ public class S3StatsForUpcomingGameDAO implements StatsForUpcomingGamesDAO {
     }
 
     @Override
-    public void saveStatsForUpcomingGame(League league, String gameId, StatsForUpcomingGame statsForUpcomingGame) throws PersistenceException {
+    public void saveStatsForUpcomingGames(League league, List<StatsForUpcomingGame> statsForUpcomingGames) throws PersistenceException {
         try {
-            s3Client.writeObjectToS3(bucketName, getGameStatsS3Key(league, gameId), statsForUpcomingGame, false);
+            s3Client.writeObjectToS3(bucketName, getLeagueStatsS3Key(league), statsForUpcomingGames, false);
         } catch (Exception e) {
-            log.error("[S3] Exception thrown saving stats for upcoming game {}:{}", league, gameId, e);
-            throw new PersistenceException("Failed to save stats for upcoming game");
+            log.error("[S3] Exception thrown saving stats for upcoming games for league {}", league, e);
+            throw new PersistenceException("Failed to save stats for upcoming games");
         }
     }
 
@@ -39,10 +38,6 @@ public class S3StatsForUpcomingGameDAO implements StatsForUpcomingGamesDAO {
             log.error("[S3] Exception thrown getting stats for upcoming games in league {}", league, e);
             throw new PersistenceException("Failed to get stats for upcoming games for league");
         }
-    }
-
-    private String getGameStatsS3Key(League league, String gameId) {
-        return String.format(STATS_FOR_GAME_KEY, league, gameId);
     }
 
     private String getLeagueStatsS3Key(League league) {
