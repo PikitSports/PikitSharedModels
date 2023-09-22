@@ -146,6 +146,28 @@ public class DDBUpcomingGamesDAO implements UpcomingGamesDAO {
         }
     }
 
+    @Override
+    public List<UpcomingGameThatMeetsModel> getModelsForUpcomingGame(String gameId) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(gameId)
+                            .build()))
+                    .build();
+
+            return upcomingGamesTable.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .collect(Collectors.toList())
+                    .stream()
+                    .map(DDBUpcomingGame::getUpcomingGame)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown getting models that meet upcoming game {}", gameId, e);
+            throw new PersistenceException("Failed to get models for upcoming game: " + e.getMessage());
+        }
+    }
+
     private void deleteBatchItems(List<WriteBatch> deleteRequests) {
         BatchWriteItemEnhancedRequest request = BatchWriteItemEnhancedRequest.builder()
                 .writeBatches(deleteRequests)

@@ -45,4 +45,13 @@ public interface UpcomingGamesDAO {
      * @throws PersistenceException
      */
     void clearUpcomingGames() throws PersistenceException;
+
+    /**
+     * Given a gameId, retrieve all models that are betting on this game. This will be used to aggregate models and visualize
+     * what percentage of models are betting on what team.
+     * @param gameId ID of game to retrieve models for.
+     * @return List of models and what their bet is for an upcoming game.
+     * @throws PersistenceException when we are unable to get models for upcoming game.
+     */
+    List<UpcomingGameThatMeetsModel> getModelsForUpcomingGame(String gameId) throws PersistenceException;
 }
