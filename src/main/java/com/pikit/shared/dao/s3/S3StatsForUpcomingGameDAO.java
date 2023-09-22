@@ -1,5 +1,6 @@
 package com.pikit.shared.dao.s3;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.pikit.shared.client.S3Client;
 import com.pikit.shared.dao.StatsForUpcomingGamesDAO;
 import com.pikit.shared.enums.League;
@@ -33,7 +34,7 @@ public class S3StatsForUpcomingGameDAO implements StatsForUpcomingGamesDAO {
     @Override
     public List<StatsForUpcomingGame> getStatsForUpcomingGames(League league) throws PersistenceException {
         try {
-            return s3Client.getListOfObjectsFromS3(bucketName, getLeagueStatsS3Key(league), StatsForUpcomingGame.class, false);
+            return s3Client.getTypeReferenceFromS3(bucketName, getLeagueStatsS3Key(league), new TypeReference<>(){}, false);
         } catch (Exception e) {
             log.error("[S3] Exception thrown getting stats for upcoming games in league {}", league, e);
             throw new PersistenceException("Failed to get stats for upcoming games for league");
