@@ -261,6 +261,28 @@ public class DDBModelDAO implements ModelDAO {
     }
 
     @Override
+    public List<DDBModel> getRecentModelsForLeague(League league, int pageSize) throws PersistenceException {
+        try {
+            QueryEnhancedRequest request = QueryEnhancedRequest.builder()
+                    .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                            .partitionValue(league.toString())
+                            .build()))
+                    .limit(pageSize)
+                    .scanIndexForward(false)
+                    .build();
+
+            return leagueIndex.query(request)
+                    .stream()
+                    .flatMap(page -> page.items().stream())
+                    .limit(pageSize)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            log.error("[DynamoDB] Exception thrown retrieving models for league {}", league, e);
+            throw new PersistenceException("Failed to get models for league");
+        }
+    }
+
+    @Override
     public List<DDBModel> getTopModelsFromLast10Games(League league, int pageSize) throws PersistenceException {
         try {
             QueryEnhancedRequest request = QueryEnhancedRequest.builder()

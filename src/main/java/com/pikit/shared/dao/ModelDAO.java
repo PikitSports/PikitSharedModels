@@ -88,6 +88,15 @@ public interface ModelDAO {
     List<DDBModel> getModelsForLeague(League league) throws PersistenceException;
 
     /**
+     * Given a league, retrieve the most recently created models that exist for this league.
+     * @param league League to retreive models for
+     * @param pageSize Number of models to return
+     * @return List of pageSize number of models for the league
+     * @throws PersistenceException When we are unable to retrieve this list of models.
+     */
+    List<DDBModel> getRecentModelsForLeague(League league, int pageSize) throws PersistenceException;
+
+    /**
      * Given a league, retrieve the top {pageSize} models over last 10 games
      * @param league League models are for
      * @param pageSize how many models to return
