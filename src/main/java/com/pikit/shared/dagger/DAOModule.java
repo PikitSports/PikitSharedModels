@@ -6,10 +6,7 @@ import com.pikit.shared.client.S3Client;
 import com.pikit.shared.dao.*;
 import com.pikit.shared.dao.ddb.*;
 import com.pikit.shared.dao.ddb.model.*;
-import com.pikit.shared.dao.s3.S3DataSourceDAO;
-import com.pikit.shared.dao.s3.S3GamesThatMeetModelDAO;
-import com.pikit.shared.dao.s3.S3TodaysGamesDAO;
-import com.pikit.shared.dao.s3.S3TopModelsForLeagueDAO;
+import com.pikit.shared.dao.s3.*;
 import dagger.Module;
 import dagger.Provides;
 import dagger.Reusable;
@@ -135,5 +132,12 @@ public class DAOModule {
         DynamoDbIndex<DDBGroup> userGroupsIndex = groupsTable.index(USER_GROUPS_INDEX);
 
         return new DDBGroupDAO(groupsTable, userGroupsIndex);
+    }
+
+    @Provides
+    @Reusable
+    static StatsForUpcomingGamesDAO statsForUpcomingGamesDAO(S3Client s3Client) {
+        String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
+        return new S3StatsForUpcomingGameDAO(s3Client, gamesBucketName);
     }
 }
