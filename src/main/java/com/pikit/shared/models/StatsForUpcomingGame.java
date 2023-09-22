@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class StatsForUpcomingGame {
     private String gameId;
+    private Game game;
     private Integer numHomeTeamMoneyLine;
     private Integer numHomeTeamSpread;
     private Integer numAwayTeamMoneyLine;
