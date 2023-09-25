@@ -9,7 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ModelProfitabilityStats {
-    private Double last10Games;
-    private Double last50Games;
-    private Double last100Games;
+    private Double last10GamesUnits;
+    private Double last50GamesUnits;
+    private Double last100GamesUnits;
+    private Double last10GamesWinPercentage;
+    private Double last50GamesWinPercentage;
+    private Double last100GamesWinPercentage;
 }

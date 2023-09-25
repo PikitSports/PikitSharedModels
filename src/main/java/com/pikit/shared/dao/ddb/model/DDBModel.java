@@ -29,6 +29,9 @@ public class DDBModel {
     private static final String LAST_10_GAMES_ATTRIBUTE = "last10Games";
     private static final String LAST_50_GAMES_ATTRIBUTE = "last50Games";
     private static final String LAST_100_GAMES_ATTRIBUTE = "last100Games";
+    private static final String LAST_10_GAMES_WIN_PERCENTAGE_ATTRIBUTE = "last10GamesWinPercentage";
+    private static final String LAST_50_GAMES_WIN_PERCENTAGE_ATTRIBUTE = "last50GamesWinPercentage";
+    private static final String LAST_100_GAMES_WIN_PERCENTAGE_ATTRIBUTE = "last100GamesWinPercentage";
 
     //Indexes
     private static final String LEAGUE_INDEX = "leagueIndex";
@@ -86,6 +89,15 @@ public class DDBModel {
             @DynamoDbSecondarySortKey(indexNames = LAST_100_GAMES_INDEX)
     })
     private Double last100Games;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute(LAST_10_GAMES_WIN_PERCENTAGE_ATTRIBUTE)})
+    private Double last10GamesWinPercentage;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute(LAST_50_GAMES_WIN_PERCENTAGE_ATTRIBUTE)})
+    private Double last50GamesWinPercentage;
+
+    @Getter(onMethod_ = {@DynamoDbAttribute(LAST_100_GAMES_WIN_PERCENTAGE_ATTRIBUTE)})
+    private Double last100GamesWinPercentage;
 
     @DynamoDbAttribute(LEAGUE_ATTRIBUTE)
     @DynamoDbSecondaryPartitionKey(indexNames = {LEAGUE_INDEX, LAST_10_GAMES_INDEX, LAST_50_GAMES_INDEX, LAST_100_GAMES_INDEX})

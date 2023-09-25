@@ -447,9 +447,12 @@ public class DDBModelDAOTest {
 
     private ModelProfitabilityStats getModelProfitabilityStats() {
         return ModelProfitabilityStats.builder()
-                .last10Games(LAST_10)
-                .last50Games(LAST_50)
-                .last100Games(LAST_100)
+                .last10GamesUnits(LAST_10)
+                .last50GamesUnits(LAST_50)
+                .last100GamesUnits(LAST_100)
+                .last10GamesWinPercentage(LAST_10)
+                .last50GamesWinPercentage(LAST_50)
+                .last100GamesWinPercentage(LAST_100)
                 .build();
     }
 }

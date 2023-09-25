@@ -153,9 +153,12 @@ public class DDBModelDAO implements ModelDAO {
             DDBModel modelToUpdate = DDBModel.builder()
                     .modelId(modelId)
                     .modelPerformance(modelPerformance)
-                    .last10Games(modelProfitabilityStats.getLast10Games())
-                    .last50Games(modelProfitabilityStats.getLast50Games())
-                    .last100Games(modelProfitabilityStats.getLast100Games())
+                    .last10Games(modelProfitabilityStats.getLast10GamesUnits())
+                    .last50Games(modelProfitabilityStats.getLast50GamesUnits())
+                    .last100Games(modelProfitabilityStats.getLast100GamesUnits())
+                    .last10GamesWinPercentage(modelProfitabilityStats.getLast10GamesWinPercentage())
+                    .last50GamesWinPercentage(modelProfitabilityStats.getLast50GamesWinPercentage())
+                    .last100GamesWinPercentage(modelProfitabilityStats.getLast100GamesWinPercentage())
                     .build();
 
             UpdateItemEnhancedRequest<DDBModel> request = UpdateItemEnhancedRequest.builder(DDBModel.class)
