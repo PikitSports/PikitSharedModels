@@ -96,9 +96,11 @@ public class DDBUpcomingGamesDAO implements UpcomingGamesDAO {
                         .build());
             }
 
-            enhancedClient.batchWriteItem(BatchWriteItemEnhancedRequest.builder()
-                    .writeBatches(batchList)
-                    .build());
+            if (!batchList.isEmpty()) {
+                enhancedClient.batchWriteItem(BatchWriteItemEnhancedRequest.builder()
+                        .writeBatches(batchList)
+                        .build());
+            }
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown deleting upcoming games for model {}", modelId, e);
             throw new PersistenceException("Failed to delete upcoming games");
