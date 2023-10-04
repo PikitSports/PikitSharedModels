@@ -87,15 +87,20 @@ public class DDBModelDAO implements ModelDAO {
                 throw new NotFoundException("Model not found");
             }
 
+            DDBModel currentModel = modelOptional.get();
+
             DDBModel modelToUpdate = DDBModel.builder()
                     .modelId(modelId)
                     .lastUpdatedTimestamp(System.currentTimeMillis())
                     .modelConfiguration(mergeModelConfiguration(modelOptional.get().getModelConfiguration(), modelConfiguration))
+                    .modelStatus(ModelStatus.IN_PROGRESS)
+                    .userCreatedBy(currentModel.getUserCreatedBy())
+                    .creationTimestamp(currentModel.getCreationTimestamp())
+                    .league(currentModel.getLeague())
                     .build();
 
             UpdateItemEnhancedRequest<DDBModel> request = UpdateItemEnhancedRequest.builder(DDBModel.class)
                     .item(modelToUpdate)
-                    .ignoreNulls(true)
                     .build();
 
             modelsTable.updateItem(request);
@@ -364,6 +369,7 @@ public class DDBModelDAO implements ModelDAO {
                 .seasonsStored(newConfig.getSeasonsStored() != null ? newConfig.getSeasonsStored() : currentConfig.getSeasonsStored())
                 .betsTaken(newConfig.getBetsTaken() != null ? newConfig.getBetsTaken() : currentConfig.getBetsTaken())
                 .modelRequirements(newConfig.getModelRequirements() != null ? newConfig.getModelRequirements() : currentConfig.getModelRequirements())
+                .timeRange(newConfig.getTimeRange() != null ? newConfig.getTimeRange() : currentConfig.getTimeRange())
                 .build();
     }
 }
