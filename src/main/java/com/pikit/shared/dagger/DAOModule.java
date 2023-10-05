@@ -35,6 +35,8 @@ public class DAOModule {
     private static final String GAME_STATUS_INDEX_NAME = "gameStatusIndex";
     private static final String GROUPS_TABLE_NAME = "Groups";
     private static final String USER_GROUPS_INDEX = "userGroupsIndex";
+    private static final String ACTIVITY_FEED_TABLE_NAME = "ActivityFeed";
+    private static final String USER_FEED_INDEX = "userFeedIndex";
 
     @Provides
     @Reusable
@@ -139,5 +141,14 @@ public class DAOModule {
     static StatsForUpcomingGamesDAO statsForUpcomingGamesDAO(S3Client s3Client) {
         String gamesBucketName = System.getenv(GAMES_BUCKET_NAME_KEY);
         return new S3StatsForUpcomingGameDAO(s3Client, gamesBucketName);
+    }
+
+    @Provides
+    @Reusable
+    static ActivityFeedDAO activityFeedDAO(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
+        DynamoDbTable<DDBActivity> activityFeedTable = dynamoDbEnhancedClient.table(ACTIVITY_FEED_TABLE_NAME, TableSchema.fromBean(DDBActivity.class));
+        DynamoDbIndex<DDBActivity> userFeedIndex = activityFeedTable.index(USER_FEED_INDEX);
+
+        return new DDBActivityFeedDAO(activityFeedTable, userFeedIndex);
     }
 }
