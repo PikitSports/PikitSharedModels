@@ -87,16 +87,19 @@ public class DDBActivityFeedDAO implements ActivityFeedDAO {
                     .flatMap(page -> page.items().stream())
                     .collect(Collectors.toList());
 
-            DDBActivity lastActivitySeen = activityList.get(activityList.size() - 1);
+            ActivityFeed.ActivityFeedBuilder builder = ActivityFeed.builder()
+                    .activityList(activityList);
 
-            return ActivityFeed.builder()
-                    .activityList(activityList)
-                    .lastActivitySeen(LastActivitySeen.builder()
-                            .activityId(lastActivitySeen.getActivityId())
-                            .activityTimestamp(lastActivitySeen.getActivityTimestamp())
-                            .user(lastActivitySeen.getUser())
-                            .build())
-                    .build();
+            if (activityList.size() > 0) {
+                DDBActivity lastActivitySeen = activityList.get(activityList.size() - 1);
+                builder.lastActivitySeen(LastActivitySeen.builder()
+                        .activityId(lastActivitySeen.getActivityId())
+                        .activityTimestamp(lastActivitySeen.getActivityTimestamp())
+                        .user(lastActivitySeen.getUser())
+                        .build());
+            }
+
+            return builder.build();
         } catch (DynamoDbException e) {
             log.error("[DynamoDB] Exception thrown retrieving activity feed for user {}", user, e);
             throw new PersistenceException("Failed to get activity feed for user");
